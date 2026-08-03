@@ -1,12 +1,13 @@
 {
-  "name": "@rampkit/core",
-  "version": "1.0.0",
+  "name": "@kevinbrenes/rampkit-core",
+  "version": "1.0.2",
   "description": "Enterprise Multi-Anchor Router SDK for Stellar — Unified API routing for Etherfuse, Manteca, and Koywe fiat ramps in LATAM",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist/"
+    "dist/",
+    "README.md"
   ],
   "publishConfig": {
     "access": "public"
