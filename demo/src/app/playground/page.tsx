@@ -2,12 +2,12 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { RampWidget } from '@rampkit/ui';
-import { SavingsWidget } from '@rampkit/ui';
-import { RampRouter } from '@rampkit/core';
+import { RampWidget } from 'rampkit-latam-ui';
+import { SavingsWidget } from 'rampkit-latam-ui';
+import { RampRouter } from 'rampkit-latam-core';
 import { useLanguage } from '../../context/LanguageContext';
 import { LanguageSelector } from '../../components/LanguageSelector';
-import '@rampkit/ui/src/styles/rampkit.css';
+import 'rampkit-latam-ui/src/styles/rampkit.css';
 
 // Initialize the router
 const router = new RampRouter({

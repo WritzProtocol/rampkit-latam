@@ -1,9 +1,10 @@
 @import 'tailwindcss';
-@import '@rampkit/ui/src/styles/rampkit.css';
+@import 'rampkit-latam-ui/src/styles/rampkit.css';
 
-/* 
- * Reset Next.js defaults since we use our own design system
- * from @rampkit/ui, but we keep Tailwind around just in case.
+/*
+ * Custom global resets for PoupaStellar demo app.
+ * Most styling tokens and component layouts come directly
+ * from rampkit-latam-ui, but we keep Tailwind around just in case.
  */
 
 :root {

@@ -1,4 +1,4 @@
-import { RampRouter } from '@rampkit/core';
+import { RampRouter } from 'rampkit-latam-core';
 
 // Server-side initialized RampRouter with API keys from environment
 export const router = new RampRouter({

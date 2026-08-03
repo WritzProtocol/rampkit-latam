@@ -1,6 +1,6 @@
-# 🎨 rampkit-latam-ui
+# rampkit-latam-ui
 
-> **Enterprise React UI Kit for Stellar Fiat Ramps & Yield Vaults — Drop-in `<RampWidget />`, `<SavingsWidget />`, and `<StatusTracker />` with full i18n support.**
+Enterprise React UI Kit for Stellar Fiat Ramps & Yield Vaults — Drop-in `<RampWidget />`, `<SavingsWidget />`, and `<StatusTracker />` with full i18n support.
 
 [![npm version](https://img.shields.io/npm/v/rampkit-latam-ui.svg?style=flat-square&color=4ade80)](https://www.npmjs.com/package/rampkit-latam-ui)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
@@ -8,28 +8,28 @@
 
 ---
 
-## 📌 Executive Summary
+## Executive Summary
 
 `rampkit-latam-ui` is a production-ready React component library that delivers complete, drop-in financial checkout and yield monitoring interfaces for Latin American fiat payment rails on Stellar.
 
-Designed with enterprise-grade dark mode aesthetics, glassmorphic card overlays, radial green glow effects, crisp SVG vector icons, dynamic 3-second status polling, browser push notifications, and multi-language support (**English**, **Spanish**, **Portuguese**).
+Designed with enterprise-grade dark mode aesthetics, glassmorphic card overlays, radial green glow effects, crisp SVG vector icons, dynamic 3-second status polling, browser push notifications, and multi-language support (English, Spanish, Portuguese).
 
 ---
 
-## ✨ Component Suite
+## Component Suite
 
 | Component | Description | Primary Use Case |
 |-----------|-------------|------------------|
-| **`<RampWidget />`** | Complete multi-step fiat checkout flow with asset selection, parallel quote comparison, PIX/SPEI QR code rendering, polling, and status notifications. | Main payment checkout modal / embedded widget |
-| **`<SavingsWidget />`** | Live yield monitoring dashboard reading completed Etherfuse order receipts and tracking TESOURO 13.25% APY yield in real-time. | User dashboard yield vault card |
-| **`<StatusTracker />`** | Step-by-step animated status progression tracker with direct links to Stellar Expert Explorer. | Order details & receipt drawer |
-| **`<QuoteCard />`** | Interactive comparison card highlighting best exchange rates, low fees, and anchor badges. | Quote selection list |
+| `<RampWidget />` | Complete multi-step fiat checkout flow with asset selection, parallel quote comparison, PIX/SPEI QR code rendering, polling, and status notifications. | Main payment checkout modal / embedded widget |
+| `<SavingsWidget />` | Live yield monitoring dashboard reading completed Etherfuse order receipts and tracking TESOURO 13.25% APY yield in real-time. | User dashboard yield vault card |
+| `<StatusTracker />` | Step-by-step animated status progression tracker with direct links to Stellar Expert Explorer. | Order details & receipt drawer |
+| `<QuoteCard />` | Interactive comparison card highlighting best exchange rates, low fees, and anchor badges. | Quote selection list |
 
 ---
 
-## 📦 Installation
+## Installation
 
-Install via `npm`, `yarn`, or `pnpm`:
+Install via npm, yarn, or pnpm:
 
 ```bash
 npm install rampkit-latam-ui rampkit-latam-core
@@ -45,7 +45,7 @@ pnpm add rampkit-latam-ui rampkit-latam-core
 
 ---
 
-## 💡 Quick Start & Usage Examples
+## Quick Start & Usage Examples
 
 ```tsx
 import React from 'react';
@@ -89,7 +89,7 @@ export function PaymentDashboard() {
 
 ---
 
-## 🎨 Styling & Custom Theme Variables
+## Styling & Custom Theme Variables
 
 `rampkit-latam-ui` includes a standalone CSS file containing pre-built CSS variables for custom branding:
 
@@ -111,7 +111,7 @@ export function PaymentDashboard() {
 
 ---
 
-## 🌐 Multi-Language (i18n) Support
+## Multi-Language (i18n) Support
 
 Pass the `locale` prop to any component to update interface strings dynamically:
 
@@ -121,14 +121,14 @@ Pass the `locale` prop to any component to update interface strings dynamically:
 
 ---
 
-## 🔗 Related Resources
+## Related Resources
 
-- ⚙️ SDK Engine: [`rampkit-latam-core`](https://www.npmjs.com/package/rampkit-latam-core)
-- 🌐 Live Production Demo: [https://rampkit-latam.vercel.app](https://rampkit-latam.vercel.app)
-- 🐙 Repository: [GitHub - diegoucampos-tech/rampkit-latam](https://github.com/diegoucampos-tech/rampkit-latam)
+- SDK Engine: [`rampkit-latam-core`](https://www.npmjs.com/package/rampkit-latam-core)
+- Live Production Demo: [https://rampkit-latam.vercel.app](https://rampkit-latam.vercel.app)
+- Repository: [GitHub - diegoucampos-tech/rampkit-latam](https://github.com/diegoucampos-tech/rampkit-latam)
 
 ---
 
-## 📄 License
+## License
 
 MIT © RampKit LATAM Team
