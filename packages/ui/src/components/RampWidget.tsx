@@ -21,6 +21,11 @@
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import type { RampRouter, RampQuote, RampOrder, Country, RampDirection } from '@rampkit/core';
+
+const CheckIcon = () => (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display: 'inline', marginRight: '8px', verticalAlign: 'middle', color: 'var(--rk-text-success)'}}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>);
+const AlertIcon = () => (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display: 'inline', marginRight: '4px', verticalAlign: 'middle'}}><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>);
+const QrCodeIcon = () => (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display: 'inline', marginRight: '4px', verticalAlign: 'middle'}}><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><rect x="7" y="7" width="3" height="3"></rect><rect x="14" y="7" width="3" height="3"></rect><rect x="7" y="14" width="3" height="3"></rect><rect x="14" y="14" width="3" height="3"></rect></svg>);
+
 import { QuoteCard } from './QuoteCard';
 import { StatusTracker } from './StatusTracker';
 
@@ -73,6 +78,8 @@ const LABELS: Record<string, Record<string, string>> = {
     completed: 'Transação concluída!',
     newTransaction: 'Nova transação',
     stellarAddress: 'Endereço Stellar',
+    back: 'Voltar',
+    cancel: 'Cancelar Transação',
   },
   es: {
     title: 'Ramp',
@@ -89,6 +96,8 @@ const LABELS: Record<string, Record<string, string>> = {
     completed: '¡Transacción completada!',
     newTransaction: 'Nueva transacción',
     stellarAddress: 'Dirección Stellar',
+    back: 'Volver',
+    cancel: 'Cancelar Transacción',
   },
   en: {
     title: 'Ramp',
@@ -105,6 +114,8 @@ const LABELS: Record<string, Record<string, string>> = {
     completed: 'Transaction complete!',
     newTransaction: 'New transaction',
     stellarAddress: 'Stellar Address',
+    back: 'Back',
+    cancel: 'Cancel Transaction',
   },
 };
 
@@ -186,6 +197,10 @@ export const RampWidget: React.FC<RampWidgetProps> = ({
       setOrder(result);
       setStep('tracking');
 
+      if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+      }
+
       // Start polling for status updates
       pollRef.current = setInterval(async () => {
         try {
@@ -196,6 +211,13 @@ export const RampWidget: React.FC<RampWidgetProps> = ({
             clearInterval(pollRef.current!);
             pollRef.current = null;
             setStep('completed');
+
+            if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+              new Notification('✅ Transacción Completada', {
+                body: `Tu orden de Sandbox ha sido aprobada con éxito.`,
+              });
+            }
+
             onComplete?.(updated);
           } else if (updated.status === 'failed' || updated.status === 'expired') {
             clearInterval(pollRef.current!);
@@ -205,7 +227,7 @@ export const RampWidget: React.FC<RampWidgetProps> = ({
         } catch {
           // Ignore polling errors
         }
-      }, 5000);
+      }, 3000);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to execute order';
       setError(message);
@@ -301,7 +323,7 @@ export const RampWidget: React.FC<RampWidgetProps> = ({
                     onClick={() => setCryptoAsset(asset)}
                     style={{ flex: 1, padding: '10px', fontSize: '13px' }}
                   >
-                    {asset === 'TESOURO' ? '🇧🇷 ' : asset === 'CETES' ? '🇲🇽 ' : '💲 '}
+                    {asset === 'TESOURO' ? '🇧🇷 ' : asset === 'CETES' ? '🇲🇽 ' : ''}
                     {asset}
                   </button>
                 ))}
@@ -338,14 +360,25 @@ export const RampWidget: React.FC<RampWidgetProps> = ({
               ))}
             </div>
 
-            <button
-              className="rk-button rk-button--success"
-              onClick={handleExecute}
-              disabled={!selectedQuote}
-              id="rk-execute-btn"
-            >
-              {l.execute}
-            </button>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                className="rk-button rk-button--outline"
+                onClick={handleReset}
+                id="rk-back-btn"
+                style={{ flex: 1 }}
+              >
+                {l.back}
+              </button>
+              <button
+                className="rk-button rk-button--success"
+                onClick={handleExecute}
+                disabled={!selectedQuote}
+                id="rk-execute-btn"
+                style={{ flex: 2 }}
+              >
+                {l.execute}
+              </button>
+            </div>
           </div>
         )}
 
@@ -359,7 +392,7 @@ export const RampWidget: React.FC<RampWidgetProps> = ({
         {step === 'executing' && (
           <div style={{ textAlign: 'center', padding: '40px 0' }}>
             <div style={{ fontSize: '48px', marginBottom: '16px', animation: 'rk-pulse 1.5s ease-in-out infinite' }}>
-              ⏳
+              <div style={{ width: '48px', height: '48px', margin: '0 auto', border: '3px solid var(--rk-border)', borderTopColor: 'var(--rk-text-primary)', borderRadius: '50%', animation: 'rk-spin 1s linear infinite' }} />
             </div>
             <p style={{ color: 'var(--rk-text-secondary)' }}>{l.processing}</p>
           </div>
@@ -385,8 +418,20 @@ export const RampWidget: React.FC<RampWidgetProps> = ({
                 marginTop: '16px',
                 textAlign: 'center',
               }}>
-                <p style={{ fontSize: '13px', color: 'var(--rk-text-secondary)', marginBottom: '12px' }}>
-                  {locale === 'pt-BR' ? '📋 Copie o código PIX:' : '📋 Copy PIX code:'}
+                <p style={{ fontSize: '13px', color: 'var(--rk-text-secondary)', marginBottom: '16px' }}>
+                  <QrCodeIcon /> {locale === 'pt-BR' ? 'Escaneie o QR Code PIX:' : 'Scan the PIX QR Code:'}
+                </p>
+                <div style={{ background: 'white', padding: '16px', borderRadius: '8px', display: 'inline-block', marginBottom: '16px' }}>
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(order.quote.paymentDetails.pixCopyPaste)}`}
+                    alt="PIX QR Code"
+                    width={150}
+                    height={150}
+                    style={{ display: 'block' }}
+                  />
+                </div>
+                <p style={{ fontSize: '12px', color: 'var(--rk-text-secondary)', marginBottom: '8px' }}>
+                  {locale === 'pt-BR' ? 'Ou copie o código abaixo:' : 'Or copy the code below:'}
                 </p>
                 <code style={{
                   display: 'block',
@@ -406,13 +451,25 @@ export const RampWidget: React.FC<RampWidgetProps> = ({
             {step === 'completed' && (
               <div style={{ textAlign: 'center', marginTop: '24px' }}>
                 <p style={{ fontSize: '18px', fontWeight: 700, color: 'var(--rk-text-success)', marginBottom: '16px' }}>
-                  ✅ {l.completed}
+                  <CheckIcon /> {l.completed}
                 </p>
                 <button
                   className="rk-button rk-button--outline"
                   onClick={handleReset}
                 >
                   {l.newTransaction}
+                </button>
+              </div>
+            )}
+
+            {step === 'tracking' && order.status === 'pending_payment' && (
+              <div style={{ textAlign: 'center', marginTop: '16px' }}>
+                <button
+                  className="rk-button rk-button--outline"
+                  onClick={handleReset}
+                  style={{ fontSize: '13px', padding: '10px 16px', opacity: 0.8 }}
+                >
+                  {l.cancel}
                 </button>
               </div>
             )}
@@ -430,7 +487,7 @@ export const RampWidget: React.FC<RampWidgetProps> = ({
             color: 'var(--rk-text-warning)',
             fontSize: '13px',
           }}>
-            ⚠️ {error}
+            <AlertIcon /> {error}
           </div>
         )}
       </div>

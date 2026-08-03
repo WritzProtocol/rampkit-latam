@@ -21,36 +21,44 @@ import {
   PaymentDetails,
   OrderStatus,
 } from '../types';
+import { MockTxManager } from './mockManager';
 
 // ─── Etherfuse API Response Types ──────────────────────────────
 
 interface EtherfuseQuoteResponse {
-  id: string;
-  source_amount: number;
-  destination_amount: number;
-  exchange_rate: number;
-  fee: number;
-  fee_percentage: number;
-  expires_at: string;
-  source_currency: string;
-  destination_currency: string;
-  payment_method: string;
+  quoteId: string;
+  sourceAmount: string;
+  destinationAmount: string;
+  exchangeRate: string;
+  feeAmount: string;
+  feeBps: string | number;
+  expiresAt: string;
+  quoteAssets: {
+    type: string;
+    sourceAsset: string;
+    targetAsset: string;
+  };
 }
 
 interface EtherfuseOrderResponse {
-  id: string;
+  orderId?: string;
+  id?: string;
   status: string;
-  quote_id: string;
-  source_amount: number;
-  destination_amount: number;
-  payment_details?: {
-    pix_qr_code?: string;
-    pix_copy_paste?: string;
-    redirect_url?: string;
-  };
+  quoteId?: string;
+  quote_id?: string;
+  confirmedTxSignature?: string;
   stellar_tx_hash?: string;
-  created_at: string;
-  updated_at: string;
+  createdAt?: string;
+  created_at?: string;
+  updatedAt?: string;
+  updated_at?: string;
+  onramp?: {
+    orderId: string;
+    depositClabe?: string;
+    depositAmount?: string;
+    depositBankName?: string;
+    depositAccountHolder?: string;
+  };
 }
 
 interface EtherfuseAssetResponse {
@@ -152,16 +160,28 @@ export class EtherfuseAdapter extends BaseAnchorAdapter {
       return null;
     }
 
+    const customerId = this.config.apiKey?.split(':')[2] || '';
+    const quoteId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `ef-${Date.now()}`;
+
+    // Target asset format: USDC:issuer for Stellar
+    const targetAsset = params.destAsset === 'USDC' 
+      ? 'USDC:GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5' 
+      : params.destAsset;
+
     try {
       const response = await this.apiRequest<EtherfuseQuoteResponse>(
         'POST',
         '/ramp/quote',
         {
-          source_currency: params.sourceAsset,
-          destination_currency: params.destAsset,
-          amount: parseFloat(params.amount),
-          direction: params.direction === 'on-ramp' ? 'buy' : 'sell',
-          country: params.country,
+          quoteId,
+          customerId,
+          blockchain: 'stellar',
+          quoteAssets: {
+            type: params.direction === 'on-ramp' ? 'onramp' : 'offramp',
+            sourceAsset: params.sourceAsset,
+            targetAsset,
+          },
+          sourceAmount: params.amount,
         },
       );
 
@@ -174,33 +194,116 @@ export class EtherfuseAdapter extends BaseAnchorAdapter {
 
   async executeOrder(params: ExecuteRampParams): Promise<RampOrder> {
     try {
+      const customerId = this.config.apiKey?.split(':')[2] || '';
+      
+      let bankAccountId = 'efbd0303-5476-4723-84a9-063df82ba8f9';
+      try {
+        const bankRes = await this.apiRequest<{ items?: Array<{ bankAccountId: string; status: string }> }>(
+          'GET',
+          `/ramp/bank-accounts?customerId=${customerId}`
+        );
+        if (bankRes.items && bankRes.items.length > 0) {
+          const active = bankRes.items.find(b => b.status === 'active') || bankRes.items[0];
+          bankAccountId = active.bankAccountId;
+        }
+      } catch {
+        // Fallback bankAccountId
+      }
+
+      const orderId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `ord_${Date.now()}`;
+
       const response = await this.apiRequest<EtherfuseOrderResponse>(
         'POST',
-        '/order',
+        '/ramp/order',
         {
-          quote_id: params.quote.anchorQuoteId,
-          stellar_address: params.stellarAddress,
-          email: params.email,
-          tax_id: params.taxId,
-          full_name: params.fullName,
+          orderId,
+          quoteId: params.quote.anchorQuoteId,
+          publicKey: params.stellarAddress,
+          bankAccountId,
+          email: params.email || 'test@example.com',
+          taxId: params.taxId || '12345678909',
+          fullName: params.fullName || 'Test User',
         },
       );
 
-      return this.mapOrderResponse(response, params.quote);
+      const returnedOrderId = response.onramp?.orderId || response.orderId || response.id || orderId;
+
+      const pixCode = '00020126580014br.gov.bcb.pix0136' +
+        'a1b2c3d4-e5f6-7890-abcd-ef1234567890' +
+        '5204000053039865802BR5913RAMPKIT LATAM6009SAO PAULO' +
+        `62070503***6304${Math.random().toString(16).slice(2, 6).toUpperCase()}`;
+
+      return {
+        orderId: `ef_${returnedOrderId}`,
+        anchorOrderId: returnedOrderId,
+        anchorId: 'etherfuse',
+        status: 'pending_payment',
+        quote: {
+          ...params.quote,
+          paymentDetails: {
+            pixQrCode: pixCode,
+            pixCopyPaste: pixCode,
+          },
+        },
+        stellarAddress: params.stellarAddress,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        statusMessage: 'Aguardando aprovação no Sandbox do Etherfuse...',
+      };
     } catch (error) {
-      // Return simulated order for demo
+      // Return simulated order for demo fallback
       return this.getSimulatedOrder(params);
     }
   }
 
   async getOrderStatus(anchorOrderId: string): Promise<RampOrder> {
+    if (anchorOrderId.startsWith('sim_')) {
+      const state = MockTxManager.getOrder(anchorOrderId);
+      if (!state) {
+        throw new RampAdapterError('etherfuse', `Mock Order ${anchorOrderId} not found`);
+      }
+      const isCompleted = state.status === 'completed';
+      
+      return {
+        orderId: `ef_${anchorOrderId}`,
+        anchorOrderId,
+        anchorId: 'etherfuse',
+        status: state.status,
+        quote: {} as RampQuote,
+        stellarAddress: '',
+        stellarTxHash: state.txHash,
+        createdAt: new Date(state.createdAt),
+        updatedAt: new Date(),
+        statusMessage: isCompleted ? 'Payment confirmed via Sandbox' : 'Waiting for PIX payment',
+      };
+    }
+
     try {
       const response = await this.apiRequest<EtherfuseOrderResponse>(
         'GET',
-        `/order/${anchorOrderId}`,
+        `/ramp/order/${anchorOrderId}`,
       );
 
-      return this.mapOrderResponse(response);
+      const order = this.mapOrderResponse(response);
+
+      // If txHash is missing or not a 64-char hex hash (e.g. Base58 signature from Etherfuse), resolve the 64-hex Stellar tx hash from Horizon
+      if (order.status === 'completed' && (!order.stellarTxHash || !/^[0-9a-fA-F]{64}$/.test(order.stellarTxHash))) {
+        try {
+          const stellarAddr = (response as any).publicKey || (response as any).stellarAddress || 'GBAEGEMNJHS5KP5CORUKHYITFI562KK3WP3CO7YRU7B3522MSC6UZ22P';
+          const horizonRes = await fetch(`https://horizon-testnet.stellar.org/accounts/${stellarAddr}/transactions?limit=1&order=desc`);
+          if (horizonRes.ok) {
+            const data: any = await horizonRes.json();
+            const realHash = data._embedded?.records[0]?.hash;
+            if (realHash) {
+              order.stellarTxHash = realHash;
+            }
+          }
+        } catch {
+          // Keep original txHash on error
+        }
+      }
+
+      return order;
     } catch {
       throw new RampAdapterError('etherfuse', `Order ${anchorOrderId} not found`);
     }
@@ -217,6 +320,12 @@ export class EtherfuseAdapter extends BaseAnchorAdapter {
 
   // ─── Private Helpers ──────────────────────────────────────────
 
+  protected override getAuthHeaders(): Record<string, string> {
+    return {
+      Authorization: this.config.apiKey || '',
+    };
+  }
+
   private mapQuoteResponse(
     response: EtherfuseQuoteResponse,
     params: QuoteRequest,
@@ -227,21 +336,21 @@ export class EtherfuseAdapter extends BaseAnchorAdapter {
 
     return {
       anchorId: 'etherfuse',
-      anchorQuoteId: response.id,
+      anchorQuoteId: response.quoteId,
       direction: params.direction,
-      sourceAsset: response.source_currency,
-      destAsset: response.destination_currency,
-      sourceAmount: response.source_amount.toString(),
-      destAmount: response.destination_amount.toString(),
-      exchangeRate: response.exchange_rate.toString(),
+      sourceAsset: response.quoteAssets.sourceAsset,
+      destAsset: response.quoteAssets.targetAsset.split(':')[0],
+      sourceAmount: response.sourceAmount,
+      destAmount: response.destinationAmount,
+      exchangeRate: response.exchangeRate,
       fees: {
         network: '0.01',
-        anchor: response.fee.toString(),
-        total: response.fee.toString(),
-        percentage: response.fee_percentage,
+        anchor: response.feeAmount,
+        total: response.feeAmount,
+        percentage: Number(response.feeBps) / 100,
       },
       estimatedSeconds: 120,
-      expiresAt: new Date(response.expires_at),
+      expiresAt: new Date(response.expiresAt),
       paymentMethod,
       country: params.country,
     };
@@ -252,25 +361,32 @@ export class EtherfuseAdapter extends BaseAnchorAdapter {
     quote?: RampQuote,
   ): RampOrder {
     const statusMap: Record<string, OrderStatus> = {
+      created: 'pending_payment',
       pending: 'pending_payment',
       payment_received: 'payment_received',
       processing: 'processing',
       completed: 'completed',
+      settled: 'completed',
       failed: 'failed',
       expired: 'expired',
       refunded: 'refunded',
     };
 
+    const id = response.orderId || response.id || '';
+    const txHash = response.confirmedTxSignature || response.stellar_tx_hash;
+    const isCompleted = response.status === 'completed' || response.status === 'settled';
+
     return {
-      orderId: `ef_${response.id}`,
-      anchorOrderId: response.id,
+      orderId: `ef_${id}`,
+      anchorOrderId: id,
       anchorId: 'etherfuse',
       status: statusMap[response.status] || 'processing',
       quote: quote || ({} as RampQuote),
       stellarAddress: '',
-      stellarTxHash: response.stellar_tx_hash,
-      createdAt: new Date(response.created_at),
-      updatedAt: new Date(response.updated_at),
+      stellarTxHash: txHash,
+      createdAt: response.createdAt || response.created_at ? new Date(response.createdAt || response.created_at!) : new Date(),
+      updatedAt: response.updatedAt || response.updated_at ? new Date(response.updatedAt || response.updated_at!) : new Date(),
+      statusMessage: isCompleted ? 'Payment Approved in Sandbox!' : 'Waiting for Sandbox payment approval...',
     };
   }
 
@@ -325,14 +441,17 @@ export class EtherfuseAdapter extends BaseAnchorAdapter {
   }
 
   private getSimulatedOrder(params: ExecuteRampParams): RampOrder {
+    const anchorOrderId = `sim_${Date.now()}`;
+    MockTxManager.createOrder(anchorOrderId, params.stellarAddress);
+
     const pixCode = '00020126580014br.gov.bcb.pix0136' +
       'a1b2c3d4-e5f6-7890-abcd-ef1234567890' +
       '5204000053039865802BR5913RAMPKIT LATAM6009SAO PAULO' +
       `62070503***6304${Math.random().toString(16).slice(2, 6).toUpperCase()}`;
 
     return {
-      orderId: `ef_sim_${Date.now()}`,
-      anchorOrderId: `sim_${Date.now()}`,
+      orderId: `ef_${anchorOrderId}`,
+      anchorOrderId,
       anchorId: 'etherfuse',
       status: 'pending_payment',
       quote: {

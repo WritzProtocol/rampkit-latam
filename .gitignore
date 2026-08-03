@@ -40,3 +40,4 @@ coverage/
 # Stellar
 .soroban/
 .stellar/
+.vercel

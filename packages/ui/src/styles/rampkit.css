@@ -11,35 +11,35 @@
 /* ─── CSS Custom Properties (Design Tokens) ────────────────── */
 
 :root {
-  /* Color Palette — Stellar-inspired deep space */
-  --rk-bg-primary: #0a0b14;
-  --rk-bg-secondary: #111227;
-  --rk-bg-card: rgba(17, 18, 39, 0.7);
-  --rk-bg-card-hover: rgba(25, 26, 55, 0.85);
-  --rk-bg-glass: rgba(255, 255, 255, 0.04);
-  --rk-bg-glass-hover: rgba(255, 255, 255, 0.08);
+  /* Color Palette — Sleek Monochromatic API Aesthetic */
+  --rk-bg-primary: #0A0A0A;
+  --rk-bg-secondary: #111111;
+  --rk-bg-card: #111111;
+  --rk-bg-card-hover: #151515;
+  --rk-bg-glass: #1A1A1A;
+  --rk-bg-glass-hover: #222222;
 
-  /* Accent Gradients */
-  --rk-gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --rk-gradient-success: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-  --rk-gradient-warning: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  --rk-gradient-gold: linear-gradient(135deg, #f2c94c 0%, #f2994a 100%);
-  --rk-gradient-brazil: linear-gradient(135deg, #009c3b 0%, #ffdf00 50%, #002776 100%);
+  /* Accent Solid Colors (No Gradients) */
+  --rk-gradient-primary: #ffffff;
+  --rk-gradient-success: #22c55e;
+  --rk-gradient-warning: #ef4444;
+  --rk-gradient-gold: #ffffff;
+  --rk-gradient-brazil: #22c55e;
 
   /* Text Colors */
-  --rk-text-primary: #f0f0f8;
-  --rk-text-secondary: #9d9db8;
-  --rk-text-muted: #5a5a7a;
-  --rk-text-accent: #667eea;
-  --rk-text-success: #38ef7d;
-  --rk-text-warning: #f5576c;
+  --rk-text-primary: #ffffff;
+  --rk-text-secondary: #a1a1aa;
+  --rk-text-muted: #71717a;
+  --rk-text-accent: #ffffff;
+  --rk-text-success: #4ade80;
+  --rk-text-warning: #f87171;
 
   /* Border & Shadow */
-  --rk-border: rgba(255, 255, 255, 0.06);
-  --rk-border-active: rgba(102, 126, 234, 0.4);
-  --rk-shadow-card: 0 8px 32px rgba(0, 0, 0, 0.3);
-  --rk-shadow-glow: 0 0 40px rgba(102, 126, 234, 0.15);
-  --rk-shadow-success: 0 0 30px rgba(56, 239, 125, 0.15);
+  --rk-border: rgba(255, 255, 255, 0.1);
+  --rk-border-active: rgba(255, 255, 255, 0.3);
+  --rk-shadow-card: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --rk-shadow-glow: 0 0 0 2px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.2);
+  --rk-shadow-success: 0 0 20px rgba(56, 239, 125, 0.15);
 
   /* Sizing */
   --rk-radius-sm: 8px;
@@ -80,38 +80,21 @@
 
 .rk-card {
   background: var(--rk-bg-card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--rk-border);
   border-radius: var(--rk-radius-lg);
   box-shadow: var(--rk-shadow-card);
   padding: 24px;
-  transition: all var(--rk-transition-normal);
   position: relative;
   overflow: hidden;
 }
 
 .rk-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.3), transparent);
-  opacity: 0;
-  transition: opacity var(--rk-transition-normal);
-}
-
-.rk-card:hover::before {
-  opacity: 1;
+  display: none;
 }
 
 .rk-card:hover {
   background: var(--rk-bg-card-hover);
   border-color: var(--rk-border-active);
-  box-shadow: var(--rk-shadow-glow);
-  transform: translateY(-2px);
 }
 
 /* ─── Quote Card ───────────────────────────────────────────── */
@@ -122,7 +105,8 @@
 }
 
 .rk-quote-card--selected {
-  border-color: var(--rk-border-active);
+  border-color: rgba(255, 255, 255, 0.8);
+  background: var(--rk-bg-card-hover);
   box-shadow: var(--rk-shadow-glow);
 }
 
@@ -176,10 +160,7 @@
 .rk-quote-card__amount {
   font-size: 28px;
   font-weight: 800;
-  background: var(--rk-gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: white;
   margin-bottom: 4px;
 }
 
@@ -267,11 +248,9 @@
 }
 
 .rk-status-tracker__dot--active {
-  border-color: #667eea;
-  background: var(--rk-gradient-primary);
-  color: white;
-  box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
-  animation: rk-pulse 2s ease-in-out infinite;
+  border-color: white;
+  background: white;
+  color: black;
 }
 
 .rk-status-tracker__dot--completed {
@@ -326,6 +305,8 @@
 
 .rk-input {
   flex: 1;
+  width: 100%;
+  min-width: 0;
   background: transparent;
   border: none;
   outline: none;
@@ -355,6 +336,7 @@
   cursor: pointer;
   transition: all var(--rk-transition-fast);
   font-family: var(--rk-font);
+  flex-shrink: 0;
 }
 
 .rk-currency-selector:hover {
@@ -387,8 +369,8 @@
 }
 
 .rk-button--primary {
-  background: var(--rk-gradient-primary);
-  color: white;
+  background: white;
+  color: black;
 }
 
 .rk-button--primary:hover {
@@ -401,12 +383,12 @@
 }
 
 .rk-button--success {
-  background: var(--rk-gradient-success);
-  color: #0a0b14;
+  background: #22c55e;
+  color: white;
 }
 
 .rk-button--success:hover {
-  box-shadow: 0 8px 25px rgba(56, 239, 125, 0.3);
+  background: #16a34a;
 }
 
 .rk-button--outline {
@@ -421,7 +403,9 @@
 }
 
 .rk-button:disabled {
-  opacity: 0.5;
+  background: #222222 !important;
+  color: #71717a !important;
+  border-color: #333333 !important;
   cursor: not-allowed;
   transform: none !important;
 }
@@ -430,83 +414,152 @@
 
 .rk-savings {
   text-align: center;
+  background: linear-gradient(180deg, rgba(20, 20, 20, 0.9) 0%, rgba(10, 10, 10, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .rk-savings__yield-display {
   position: relative;
-  padding: 32px;
-  margin-bottom: 24px;
+  padding: 24px 16px;
+  margin-bottom: 20px;
+  background: radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.08) 0%, transparent 70%);
+  border-radius: var(--rk-radius-lg);
+  border: 1px solid rgba(34, 197, 94, 0.15);
 }
 
 .rk-savings__yield-orb {
-  width: 160px;
-  height: 160px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
-  background: var(--rk-gradient-success);
-  margin: 0 auto 20px;
+  background: #111111;
+  border: 2px solid rgba(34, 197, 94, 0.5);
+  box-shadow: 0 0 30px rgba(34, 197, 94, 0.25);
+  margin: 0 auto 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 60px rgba(56, 239, 125, 0.2);
-  animation: rk-glow 3s ease-in-out infinite;
+  animation: rk-pulse-green 3s infinite;
+}
+
+@keyframes rk-pulse-green {
+  0%, 100% { box-shadow: 0 0 25px rgba(34, 197, 94, 0.2); border-color: rgba(34, 197, 94, 0.4); }
+  50% { box-shadow: 0 0 45px rgba(34, 197, 94, 0.45); border-color: rgba(34, 197, 94, 0.8); }
 }
 
 .rk-savings__yield-value {
-  font-size: 32px;
+  font-size: 26px;
   font-weight: 800;
-  color: #0a0b14;
+  color: #4ade80;
+  font-family: var(--rk-font-mono);
 }
 
 .rk-savings__yield-label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  color: rgba(10, 11, 20, 0.6);
+  color: var(--rk-text-secondary);
   text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .rk-savings__apy {
-  font-size: 48px;
+  font-size: 52px;
   font-weight: 900;
-  background: var(--rk-gradient-gold);
+  background: linear-gradient(135deg, #ffffff 0%, #4ade80 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
   line-height: 1;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
+  letter-spacing: -0.02em;
 }
 
 .rk-savings__apy-label {
-  font-size: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--rk-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.rk-savings__pills {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.rk-savings__pill {
+  padding: 6px 14px;
+  border-radius: var(--rk-radius-full);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--rk-border);
   color: var(--rk-text-secondary);
-  margin-bottom: 24px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--rk-transition-fast);
+}
+
+.rk-savings__pill:hover,
+.rk-savings__pill--active {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.5);
+  color: #4ade80;
+}
+
+.rk-savings__projection {
+  background: var(--rk-bg-glass);
+  border: 1px solid var(--rk-border);
+  border-radius: var(--rk-radius-md);
+  padding: 16px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.rk-savings__projection-item {
+  text-align: center;
+}
+
+.rk-savings__projection-val {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--rk-text-success);
+  font-family: var(--rk-font-mono);
+}
+
+.rk-savings__projection-lbl {
+  font-size: 11px;
+  color: var(--rk-text-muted);
+  text-transform: uppercase;
 }
 
 .rk-savings__stats {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
 .rk-savings__stat {
   background: var(--rk-bg-glass);
   border: 1px solid var(--rk-border);
   border-radius: var(--rk-radius-md);
-  padding: 16px;
+  padding: 14px;
   text-align: center;
 }
 
 .rk-savings__stat-value {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--rk-text-primary);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   font-family: var(--rk-font-mono);
 }
 
 .rk-savings__stat-label {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--rk-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;

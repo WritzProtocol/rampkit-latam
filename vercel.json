@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npm run build --workspaces && npm run build --workspace=demo",
+  "outputDirectory": "demo/.next",
+  "framework": "nextjs"
+}

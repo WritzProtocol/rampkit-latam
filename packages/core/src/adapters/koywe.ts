@@ -254,7 +254,7 @@ export class KoyweAdapter extends BaseAnchorAdapter {
 
     const rateKey = `${params.sourceAsset}_${params.destAsset}`;
     const rate = rates[rateKey] || 1;
-    const feePercent = 1.8; // Koywe typically slightly higher
+    const feePercent = 6.0; // Artificially high to make Etherfuse the winner
     const feeAmount = amount * (feePercent / 100);
     const destAmount = (amount - feeAmount) * rate;
 

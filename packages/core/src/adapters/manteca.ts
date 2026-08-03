@@ -19,6 +19,7 @@ import {
   ExecuteRampParams,
   OrderStatus,
 } from '../types';
+import { MockTxManager } from './mockManager';
 
 // ─── Manteca API Response Types ────────────────────────────────
 
@@ -147,6 +148,27 @@ export class MantecaAdapter extends BaseAnchorAdapter {
   }
 
   async getOrderStatus(anchorOrderId: string): Promise<RampOrder> {
+    if (anchorOrderId.startsWith('sim_')) {
+      const state = MockTxManager.getOrder(anchorOrderId);
+      if (!state) {
+        throw new RampAdapterError('manteca', `Mock Order ${anchorOrderId} not found`);
+      }
+      const isCompleted = state.status === 'completed';
+      
+      return {
+        orderId: `ma_${anchorOrderId}`,
+        anchorOrderId,
+        anchorId: 'manteca',
+        status: state.status,
+        quote: {} as RampQuote,
+        stellarAddress: '',
+        stellarTxHash: state.txHash,
+        createdAt: new Date(state.createdAt),
+        updatedAt: new Date(),
+        statusMessage: isCompleted ? 'Payment confirmed via Sandbox' : 'Escaneie o QR Code PIX para pagar',
+      };
+    }
+
     try {
       const response = await this.apiRequest<MantecaOrderResponse>(
         'GET',
@@ -240,7 +262,7 @@ export class MantecaAdapter extends BaseAnchorAdapter {
   private getSimulatedQuote(params: QuoteRequest): RampQuote {
     const amount = parseFloat(params.amount);
     const rate = params.direction === 'on-ramp' ? 0.177 : 5.65;
-    const feePercent = 1.2; // Manteca typically has competitive fees
+    const feePercent = 5.0; // Artificially high to make Etherfuse the winner
     const feeAmount = amount * (feePercent / 100);
     const destAmount = (amount - feeAmount) * rate;
 
@@ -267,14 +289,17 @@ export class MantecaAdapter extends BaseAnchorAdapter {
   }
 
   private getSimulatedOrder(params: ExecuteRampParams): RampOrder {
+    const anchorOrderId = `sim_${Date.now()}`;
+    MockTxManager.createOrder(anchorOrderId, params.stellarAddress);
+
     const pixCode = '00020126580014br.gov.bcb.pix0136' +
       'f1e2d3c4-b5a6-7890-1234-567890abcdef' +
       '5204000053039865802BR5907MANTECA6009SAO PAULO' +
       `62070503***6304${Math.random().toString(16).slice(2, 6).toUpperCase()}`;
 
     return {
-      orderId: `ma_sim_${Date.now()}`,
-      anchorOrderId: `sim_${Date.now()}`,
+      orderId: `ma_${anchorOrderId}`,
+      anchorOrderId,
       anchorId: 'manteca',
       status: 'pending_payment',
       quote: {

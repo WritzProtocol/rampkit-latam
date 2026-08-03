@@ -1,26 +1,48 @@
 {
   "name": "@rampkit/core",
-  "version": "0.1.0",
-  "description": "Multi-Anchor Router SDK for Stellar — unified interface for Etherfuse, Manteca & Koywe fiat ramps",
+  "version": "1.0.0",
+  "description": "Enterprise Multi-Anchor Router SDK for Stellar — Unified API routing for Etherfuse, Manteca, and Koywe fiat ramps in LATAM",
   "main": "dist/index.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist/"],
+  "files": [
+    "dist/"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "test": "node --experimental-vm-modules node_modules/.bin/jest",
-    "dev": "tsc --watch"
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@stellar/stellar-sdk": "^13.1.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
-    "typescript": "^5.7.0",
-    "jest": "^29.7.0",
-    "@types/jest": "^29.5.0",
-    "ts-jest": "^29.2.0"
+    "typescript": "^5.7.0"
   },
-  "keywords": ["stellar", "ramp", "etherfuse", "manteca", "koywe", "pix", "latam"],
-  "author": "Kevin Membreño Brenes",
-  "license": "MIT"
+  "keywords": [
+    "stellar",
+    "stellar-anchor",
+    "fiat-ramp",
+    "on-ramp",
+    "off-ramp",
+    "etherfuse",
+    "manteca",
+    "koywe",
+    "pix",
+    "spei",
+    "latam",
+    "soroban",
+    "stablebonds"
+  ],
+  "author": "RampKit LATAM Team",
+  "license": "MIT",
+  "homepage": "https://rampkit-latam.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/diegoucampos-tech/rampkit-latam"
+  }
 }

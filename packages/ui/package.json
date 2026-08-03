@@ -1,20 +1,27 @@
 {
   "name": "@rampkit/ui",
-  "version": "0.1.0",
-  "description": "Drop-in React UI components for Stellar fiat ramps — RampWidget, QuoteCard, SavingsWidget",
+  "version": "1.0.0",
+  "description": "Enterprise React UI Kit for Stellar Fiat Ramps & Savings Vault — Drop-in RampWidget, StatusTracker & SavingsWidget",
   "main": "dist/index.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist/", "src/styles/"],
+  "files": [
+    "dist/",
+    "src/styles/"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch"
+    "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0"
   },
   "dependencies": {
-    "@rampkit/core": "*"
+    "@rampkit/core": "^1.0.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
@@ -23,7 +30,23 @@
     "react-dom": "^19.0.0",
     "typescript": "^5.7.0"
   },
-  "keywords": ["stellar", "ramp", "react", "pix", "widget", "ui-kit"],
-  "author": "Kevin Membreño Brenes",
-  "license": "MIT"
+  "keywords": [
+    "stellar",
+    "react",
+    "rampkit",
+    "fiat-ramp",
+    "pix",
+    "spei",
+    "widget",
+    "checkout-widget",
+    "savings-vault",
+    "latam"
+  ],
+  "author": "RampKit LATAM Team",
+  "license": "MIT",
+  "homepage": "https://rampkit-latam.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/diegoucampos-tech/rampkit-latam"
+  }
 }
