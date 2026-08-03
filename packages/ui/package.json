@@ -1,0 +1,29 @@
+{
+  "name": "@rampkit/ui",
+  "version": "0.1.0",
+  "description": "Drop-in React UI components for Stellar fiat ramps — RampWidget, QuoteCard, SavingsWidget",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist/", "src/styles/"],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "dependencies": {
+    "@rampkit/core": "*"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.7.0"
+  },
+  "keywords": ["stellar", "ramp", "react", "pix", "widget", "ui-kit"],
+  "author": "Kevin Membreño Brenes",
+  "license": "MIT"
+}

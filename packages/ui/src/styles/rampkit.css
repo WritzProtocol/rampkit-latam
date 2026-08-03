@@ -1,0 +1,584 @@
+/**
+ * @rampkit/ui — Design System CSS
+ *
+ * Premium dark theme with glassmorphism, vibrant gradients,
+ * and micro-animations. Import this file once in your app.
+ *
+ * Usage:
+ *   import '@rampkit/ui/src/styles/rampkit.css';
+ */
+
+/* ─── CSS Custom Properties (Design Tokens) ────────────────── */
+
+:root {
+  /* Color Palette — Stellar-inspired deep space */
+  --rk-bg-primary: #0a0b14;
+  --rk-bg-secondary: #111227;
+  --rk-bg-card: rgba(17, 18, 39, 0.7);
+  --rk-bg-card-hover: rgba(25, 26, 55, 0.85);
+  --rk-bg-glass: rgba(255, 255, 255, 0.04);
+  --rk-bg-glass-hover: rgba(255, 255, 255, 0.08);
+
+  /* Accent Gradients */
+  --rk-gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --rk-gradient-success: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  --rk-gradient-warning: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --rk-gradient-gold: linear-gradient(135deg, #f2c94c 0%, #f2994a 100%);
+  --rk-gradient-brazil: linear-gradient(135deg, #009c3b 0%, #ffdf00 50%, #002776 100%);
+
+  /* Text Colors */
+  --rk-text-primary: #f0f0f8;
+  --rk-text-secondary: #9d9db8;
+  --rk-text-muted: #5a5a7a;
+  --rk-text-accent: #667eea;
+  --rk-text-success: #38ef7d;
+  --rk-text-warning: #f5576c;
+
+  /* Border & Shadow */
+  --rk-border: rgba(255, 255, 255, 0.06);
+  --rk-border-active: rgba(102, 126, 234, 0.4);
+  --rk-shadow-card: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --rk-shadow-glow: 0 0 40px rgba(102, 126, 234, 0.15);
+  --rk-shadow-success: 0 0 30px rgba(56, 239, 125, 0.15);
+
+  /* Sizing */
+  --rk-radius-sm: 8px;
+  --rk-radius-md: 12px;
+  --rk-radius-lg: 16px;
+  --rk-radius-xl: 24px;
+  --rk-radius-full: 9999px;
+
+  /* Typography */
+  --rk-font: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+  --rk-font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+
+  /* Transitions */
+  --rk-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --rk-transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --rk-transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  --rk-transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ─── Reset & Base ─────────────────────────────────────────── */
+
+.rk-widget,
+.rk-widget * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.rk-widget {
+  font-family: var(--rk-font);
+  color: var(--rk-text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Card Container ───────────────────────────────────────── */
+
+.rk-card {
+  background: var(--rk-bg-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--rk-border);
+  border-radius: var(--rk-radius-lg);
+  box-shadow: var(--rk-shadow-card);
+  padding: 24px;
+  transition: all var(--rk-transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.rk-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.3), transparent);
+  opacity: 0;
+  transition: opacity var(--rk-transition-normal);
+}
+
+.rk-card:hover::before {
+  opacity: 1;
+}
+
+.rk-card:hover {
+  background: var(--rk-bg-card-hover);
+  border-color: var(--rk-border-active);
+  box-shadow: var(--rk-shadow-glow);
+  transform: translateY(-2px);
+}
+
+/* ─── Quote Card ───────────────────────────────────────────── */
+
+.rk-quote-card {
+  cursor: pointer;
+  transition: all var(--rk-transition-normal);
+}
+
+.rk-quote-card--selected {
+  border-color: var(--rk-border-active);
+  box-shadow: var(--rk-shadow-glow);
+}
+
+.rk-quote-card--best {
+  border-color: rgba(56, 239, 125, 0.3);
+  box-shadow: var(--rk-shadow-success);
+}
+
+.rk-quote-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.rk-quote-card__anchor {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rk-quote-card__anchor-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--rk-radius-sm);
+  background: var(--rk-bg-glass);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--rk-text-accent);
+}
+
+.rk-quote-card__anchor-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.rk-quote-card__badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: var(--rk-radius-full);
+  background: var(--rk-gradient-success);
+  color: #0a0b14;
+}
+
+.rk-quote-card__amount {
+  font-size: 28px;
+  font-weight: 800;
+  background: var(--rk-gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
+}
+
+.rk-quote-card__rate {
+  font-size: 13px;
+  color: var(--rk-text-secondary);
+  font-family: var(--rk-font-mono);
+}
+
+.rk-quote-card__details {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rk-border);
+}
+
+.rk-quote-card__detail {
+  text-align: center;
+}
+
+.rk-quote-card__detail-label {
+  font-size: 11px;
+  color: var(--rk-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.rk-quote-card__detail-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--rk-text-primary);
+}
+
+/* ─── Status Tracker ───────────────────────────────────────── */
+
+.rk-status-tracker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+  position: relative;
+}
+
+.rk-status-tracker__line {
+  position: absolute;
+  top: 50%;
+  left: 40px;
+  right: 40px;
+  height: 2px;
+  background: var(--rk-border);
+  transform: translateY(-50%);
+  z-index: 0;
+}
+
+.rk-status-tracker__progress {
+  height: 100%;
+  background: var(--rk-gradient-success);
+  border-radius: 2px;
+  transition: width var(--rk-transition-slow);
+}
+
+.rk-status-tracker__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 1;
+  position: relative;
+}
+
+.rk-status-tracker__dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--rk-border);
+  background: var(--rk-bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all var(--rk-transition-normal);
+}
+
+.rk-status-tracker__dot--active {
+  border-color: #667eea;
+  background: var(--rk-gradient-primary);
+  color: white;
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+  animation: rk-pulse 2s ease-in-out infinite;
+}
+
+.rk-status-tracker__dot--completed {
+  border-color: #38ef7d;
+  background: var(--rk-gradient-success);
+  color: #0a0b14;
+}
+
+.rk-status-tracker__label {
+  font-size: 11px;
+  color: var(--rk-text-muted);
+  text-align: center;
+  max-width: 80px;
+}
+
+.rk-status-tracker__label--active {
+  color: var(--rk-text-accent);
+  font-weight: 600;
+}
+
+/* ─── Input Group ──────────────────────────────────────────── */
+
+.rk-input-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.rk-input-group__label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--rk-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.rk-input-group__wrapper {
+  display: flex;
+  align-items: center;
+  background: var(--rk-bg-glass);
+  border: 1px solid var(--rk-border);
+  border-radius: var(--rk-radius-md);
+  transition: all var(--rk-transition-fast);
+  overflow: hidden;
+}
+
+.rk-input-group__wrapper:focus-within {
+  border-color: var(--rk-border-active);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.rk-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--rk-text-primary);
+  font-size: 24px;
+  font-weight: 700;
+  padding: 16px 20px;
+  font-family: var(--rk-font);
+}
+
+.rk-input::placeholder {
+  color: var(--rk-text-muted);
+}
+
+.rk-currency-selector {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  margin-right: 8px;
+  background: var(--rk-bg-glass);
+  border: 1px solid var(--rk-border);
+  border-radius: var(--rk-radius-sm);
+  color: var(--rk-text-primary);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all var(--rk-transition-fast);
+  font-family: var(--rk-font);
+}
+
+.rk-currency-selector:hover {
+  background: var(--rk-bg-glass-hover);
+  border-color: var(--rk-border-active);
+}
+
+.rk-currency-flag {
+  font-size: 18px;
+}
+
+/* ─── Button ───────────────────────────────────────────────── */
+
+.rk-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 16px 24px;
+  border: none;
+  border-radius: var(--rk-radius-md);
+  font-family: var(--rk-font);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--rk-transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.rk-button--primary {
+  background: var(--rk-gradient-primary);
+  color: white;
+}
+
+.rk-button--primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.35);
+}
+
+.rk-button--primary:active {
+  transform: translateY(0);
+}
+
+.rk-button--success {
+  background: var(--rk-gradient-success);
+  color: #0a0b14;
+}
+
+.rk-button--success:hover {
+  box-shadow: 0 8px 25px rgba(56, 239, 125, 0.3);
+}
+
+.rk-button--outline {
+  background: transparent;
+  border: 1px solid var(--rk-border);
+  color: var(--rk-text-primary);
+}
+
+.rk-button--outline:hover {
+  border-color: var(--rk-border-active);
+  background: var(--rk-bg-glass);
+}
+
+.rk-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ─── Savings Widget ───────────────────────────────────────── */
+
+.rk-savings {
+  text-align: center;
+}
+
+.rk-savings__yield-display {
+  position: relative;
+  padding: 32px;
+  margin-bottom: 24px;
+}
+
+.rk-savings__yield-orb {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: var(--rk-gradient-success);
+  margin: 0 auto 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 60px rgba(56, 239, 125, 0.2);
+  animation: rk-glow 3s ease-in-out infinite;
+}
+
+.rk-savings__yield-value {
+  font-size: 32px;
+  font-weight: 800;
+  color: #0a0b14;
+}
+
+.rk-savings__yield-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(10, 11, 20, 0.6);
+  text-transform: uppercase;
+}
+
+.rk-savings__apy {
+  font-size: 48px;
+  font-weight: 900;
+  background: var(--rk-gradient-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.rk-savings__apy-label {
+  font-size: 14px;
+  color: var(--rk-text-secondary);
+  margin-bottom: 24px;
+}
+
+.rk-savings__stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.rk-savings__stat {
+  background: var(--rk-bg-glass);
+  border: 1px solid var(--rk-border);
+  border-radius: var(--rk-radius-md);
+  padding: 16px;
+  text-align: center;
+}
+
+.rk-savings__stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--rk-text-primary);
+  margin-bottom: 4px;
+  font-family: var(--rk-font-mono);
+}
+
+.rk-savings__stat-label {
+  font-size: 11px;
+  color: var(--rk-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ─── Animations ───────────────────────────────────────────── */
+
+@keyframes rk-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.4); }
+  50% { box-shadow: 0 0 35px rgba(102, 126, 234, 0.6); }
+}
+
+@keyframes rk-glow {
+  0%, 100% { box-shadow: 0 0 60px rgba(56, 239, 125, 0.2); }
+  50% { box-shadow: 0 0 80px rgba(56, 239, 125, 0.35); }
+}
+
+@keyframes rk-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes rk-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rk-slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rk-count-up {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.rk-animate-in {
+  animation: rk-fade-in var(--rk-transition-slow) ease-out forwards;
+}
+
+.rk-animate-slide {
+  animation: rk-slide-up 600ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ─── Loading Skeleton ─────────────────────────────────────── */
+
+.rk-skeleton {
+  background: linear-gradient(90deg, var(--rk-bg-glass) 25%, var(--rk-bg-glass-hover) 50%, var(--rk-bg-glass) 75%);
+  background-size: 200% 100%;
+  animation: rk-shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--rk-radius-sm);
+}
+
+/* ─── Responsive ───────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .rk-quote-card__details {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .rk-savings__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .rk-savings__apy {
+    font-size: 36px;
+  }
+
+  .rk-input {
+    font-size: 20px;
+    padding: 12px 16px;
+  }
+}

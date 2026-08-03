@@ -1,0 +1,34 @@
+{
+  "name": "rampkit-latam",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Multi-Anchor Router SDK for Stellar — PIX, SPEI, Khipu ramps via Etherfuse, Manteca & Koywe",
+  "workspaces": [
+    "packages/core",
+    "packages/ui",
+    "demo"
+  ],
+  "scripts": {
+    "build:core": "npm run build --workspace=packages/core",
+    "build:ui": "npm run build --workspace=packages/ui",
+    "build": "npm run build:core && npm run build:ui",
+    "dev": "npm run dev --workspace=demo",
+    "test": "npm run test --workspace=packages/core",
+    "lint": "echo 'lint not configured yet'"
+  },
+  "keywords": [
+    "stellar",
+    "ramp",
+    "pix",
+    "brazil",
+    "latam",
+    "etherfuse",
+    "manteca",
+    "koywe",
+    "usdc",
+    "tesouro",
+    "soroban"
+  ],
+  "author": "Kevin Membreño Brenes <KevinMB0220>",
+  "license": "MIT"
+}
