@@ -3,47 +3,54 @@
 > **One SDK. Three Anchors. Frictionless Access to LATAM's Financial Rails & Yield.**
 > 
 > 🌐 **Live Production Demo**: [https://rampkit-latam.vercel.app](https://rampkit-latam.vercel.app)  
-> 📦 **NPM Packages**: `@rampkit/core` | `@rampkit/ui`  
+> 📦 **NPM Core SDK**: [`rampkit-latam-core`](https://www.npmjs.com/package/rampkit-latam-core)  
+> 🎨 **NPM UI Kit**: [`rampkit-latam-ui`](https://www.npmjs.com/package/rampkit-latam-ui)  
 > 🏆 Built for the [Stellar Builder Summit SP 2026 — Brazil Ramps & Regional Kits Bounty](https://app.grantfox.io).
+
+[![npm version](https://img.shields.io/npm/v/rampkit-latam-core.svg?style=flat-square&color=4ade80)](https://www.npmjs.com/package/rampkit-latam-core)
+[![npm ui version](https://img.shields.io/npm/v/rampkit-latam-ui.svg?style=flat-square&color=61dafb)](https://www.npmjs.com/package/rampkit-latam-ui)
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-Production%20Live-black.svg?style=flat-square&logo=vercel)](https://rampkit-latam.vercel.app)
+[![Stellar Network](https://img.shields.io/badge/Stellar-Testnet-purple.svg?style=flat-square)](https://stellar.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
 ---
 
-## 🚀 Key Judge Highlights & Live Links
+## 🚀 Live Production Links & NPM Packages
 
-| Resource | Link / Details |
-|----------|----------------|
-| **Live Interactive Playground** | 🌐 [https://rampkit-latam.vercel.app](https://rampkit-latam.vercel.app) |
-| **Real Etherfuse API Integration** | Connected directly to Etherfuse Sandbox API (`POST /ramp/order`, `GET /ramp/orders`, PIX QR) |
-| **Stellar Explorer Integration** | 🔗 Resolves 64-hex transaction hashes on [Stellar Expert Testnet](https://stellar.expert/explorer/testnet) |
-| **Multi-Language (i18n)** | 🇺🇸 English (US) \| 🇪🇸 Spanish (ES) \| 🇧🇷 Portuguese (PT-BR) |
-| **Yield Automation** | 📈 Real-time TESOURO 13.25% APY yield tracking directly from Etherfuse order receipts |
+| Resource | URL / Details | Description |
+|----------|---------------|-------------|
+| 🌐 **Live Playground** | [https://rampkit-latam.vercel.app](https://rampkit-latam.vercel.app) | Production Next.js web application deployed on Vercel |
+| ⚙️ **Core SDK Package** | [`npm i rampkit-latam-core`](https://www.npmjs.com/package/rampkit-latam-core) | Standardized TypeScript router engine for Etherfuse, Manteca, Koywe |
+| 🎨 **React UI Kit Package** | [`npm i rampkit-latam-ui`](https://www.npmjs.com/package/rampkit-latam-ui) | Drop-in `<RampWidget />`, `<SavingsWidget />`, and `<StatusTracker />` components |
+| ⚡ **Etherfuse API Integration** | Real Sandbox Connection | Connected to Etherfuse Sandbox (`/ramp/order`, `/ramp/orders`, `/ramp/bank-accounts`) |
+| 🔗 **Stellar Explorer Sync** | Stellar Expert Resolution | Resolves 64-character hex transaction hashes for [Stellar Expert Testnet](https://stellar.expert/explorer/testnet) |
 
 ---
 
 ## 💥 The Problem: LATAM Anchor Fragmentation
 
-Stellar leads cross-border payments through its extensive Anchor network (SEP-24 / SEP-6). However, developers building for Latin America face massive fragmentation:
+Stellar leads cross-border payments through its extensive Anchor network (SEP-24 / SEP-6). However, developers building applications for Latin America face a massive fragmentation nightmare:
 
-1. **Vendor Lock-in & Integration Overhead**: Supporting Brazil (PIX), Mexico (SPEI), and Chile (Khipu) requires integrating separate APIs (Etherfuse, Manteca, Koywe) with incompatible schemas.
-2. **Suboptimal Spreads**: Anchors have varying exchange rates, spreads, and fees. Without a unified layer, users miss out on the best rates.
-3. **Missing Presentation Standards**: Developers waste weeks building custom "enter amount → generate PIX QR → track order status" UI flows.
-4. **UX Barrier to Sovereign Yield**: Tokenized treasury bonds like Etherfuse's `TESOURO` (13.25% APY) offer unparalleled savings, but converting bank fiat into yield-accruing tokens is traditionally a multi-step hurdle.
+1. **Vendor Lock-in & Integration Overhead**: Supporting Brazil (PIX), Mexico (SPEI), and Chile (Khipu) requires reading documentation and writing custom integration code for three separate APIs (**Etherfuse**, **Manteca**, **Koywe**).
+2. **Missing Price Discovery**: Anchors have varying exchange rates, spreads, and fee structures. Without a unified layer, users miss out on optimal conversion rates.
+3. **No Presentation Layer Standards**: Every developer wastes weeks building custom "enter amount → generate PIX QR code → track order status" UI flows.
+4. **Friction to Yield**: Tokenized treasury bonds like Etherfuse's `TESOURO` (13.25% APY) offer high-yield savings, but converting fiat in a bank account into yield-accruing tokens on-chain is traditionally a multi-step hurdle.
 
 ---
 
 ## ⚡ The RampKit LATAM Solution
 
-RampKit LATAM is an enterprise developer toolkit that makes integrating Latin American payment rails onto Stellar as effortless as adding a Stripe checkout.
+RampKit LATAM is an enterprise developer toolkit that makes integrating Latin American payment rails onto Stellar as effortless as adding a Stripe checkout widget.
 
-### 1. `@rampkit/core` — Multi-Anchor Router SDK
-A unified TypeScript engine standardizing **Etherfuse**, **Manteca**, and **Koywe** under one API.
+### 1. `rampkit-latam-core` — Multi-Anchor Router SDK
+A unified TypeScript API engine standardizing Etherfuse, Manteca, and Koywe under one interface.
 
 - **Smart Rate Routing**: Queries quotes from all anchors in parallel and ranks them by lowest fees or highest payout.
-- **Production & Hybrid Sandbox Modes**: Seamlessly switches between live anchors and sandbox environments for testing.
-- **Etherfuse Live API Sync**: Interacts directly with Etherfuse Sandbox (`/ramp/quote`, `/ramp/order`, `/ramp/orders`, `/ramp/bank-accounts`).
+- **Etherfuse Sandbox Sync**: Interacts directly with Etherfuse Sandbox (`/ramp/quote`, `/ramp/order`, `/ramp/orders`, `/ramp/bank-accounts`).
+- **Horizon Hash Resolution**: Automatically maps Base58 signature strings to 64-character hexadecimal Stellar transaction hashes.
 
 ```typescript
-import { RampRouter } from '@rampkit/core';
+import { RampRouter } from 'rampkit-latam-core';
 
 const router = new RampRouter({
   network: 'testnet',
@@ -64,12 +71,12 @@ const quotes = await router.getQuotes({
 });
 ```
 
-### 2. `@rampkit/ui` — Enterprise React UI Kit
-Drop-in components styled with glassmorphic dark mode, micro-animations, and full i18n support.
+### 2. `rampkit-latam-ui` — Enterprise React UI Kit
+Drop-in component library styled with dark mode glassmorphism, micro-animations, vector SVG icons, and dynamic i18n support.
 
 ```tsx
-import { RampWidget, SavingsWidget } from '@rampkit/ui';
-import '@rampkit/ui/src/styles/rampkit.css';
+import { RampWidget, SavingsWidget } from 'rampkit-latam-ui';
+import 'rampkit-latam-ui/dist/styles/rampkit.css';
 
 // 1. One-line Fiat Checkout Widget
 <RampWidget router={router} stellarAddress="G..." locale="es" />
@@ -79,10 +86,7 @@ import '@rampkit/ui/src/styles/rampkit.css';
 ```
 
 - **`<RampWidget />`**: Complete checkout flow, PIX QR generation, 3s heartbeat status polling, and browser push notifications.
-- **`<SavingsWidget />`**: Real-time yield monitor reading completed Etherfuse order history and tracking 13.25% APY in real time.
-
-### 3. Soroban Smart Contract — Auto-Savings Vault
-An on-chain Rust vault (`contracts/savings-vault`) that accepts deposits and automates yield accrual on Stellar.
+- **`<SavingsWidget />`**: Real-time yield monitor reading completed Etherfuse order history and tracking 13.25% APY yield accrual in real time.
 
 ---
 
@@ -95,8 +99,8 @@ graph TD
     classDef contract fill:#533483,stroke:#e94560,stroke-width:2px,color:#fff
     classDef ui fill:#e94560,stroke:#1a1a2e,stroke-width:2px,color:#fff
 
-    UI["@rampkit/ui<br>React Components"]:::ui
-    SDK["@rampkit/core<br>Multi-Anchor Router"]:::sdk
+    UI["rampkit-latam-ui<br>React Components"]:::ui
+    SDK["rampkit-latam-core<br>Multi-Anchor Router"]:::sdk
     
     subgraph Anchors
         EF["Etherfuse<br>🇧🇷 PIX · TESOURO"]:::anchor
@@ -120,18 +124,30 @@ graph TD
 
 ---
 
-## 🌐 Supported Regional Corridors & APYs
+## 🌐 Supported Corridors & APYs
 
-| Country | Currency | Payment Rail | Anchors | Assets | Yield (APY) |
-|---------|----------|--------------|---------|--------|-------------|
+| Country | Fiat Currency | Payment Rail | Supported Anchors | Token Assets | Yield (APY) |
+|---------|---------------|--------------|-------------------|--------------|-------------|
 | 🇧🇷 **Brazil** | BRL | PIX | Etherfuse, Manteca | USDC, TESOURO | **13.25% APY** |
 | 🇲🇽 **Mexico** | MXN | SPEI | Etherfuse, Koywe | USDC, CETES | **10.50% APY** |
 | 🇨🇱 **Chile** | CLP | Khipu | Koywe | USDC | — |
-| 🇺🇸 **USA** | USD | Bank Transfer | Etherfuse | USDC, USTRY | **4.80% APY** |
+| 🇺🇸 **USA** | USD | ACH / Wire | Etherfuse | USDC, USTRY | **4.80% APY** |
 
 ---
 
-## 💻 Quick Start & Setup
+## 🎯 Bounty Alignment
+
+This project addresses **3 out of 5** suggested deliverables for the Brazil Ramps bounty:
+
+| Bounty Example | Deliverable | Status |
+|---------------|-------------|--------|
+| **Multi-anchor router**: "one interface, multiple anchors, live quotes" | `rampkit-latam-core` — `RampRouter.getQuotes()` | ✅ **Complete** |
+| **Ramp UX kit**: "reusable, documented, importable, works in a second app" | `rampkit-latam-ui` — `<RampWidget />` & `<SavingsWidget />` | ✅ **Complete** |
+| **PIX ramp integration**: "BRL in and out via PIX into Etherfuse USDC/TESOURO" | Full flow: PIX → Etherfuse API → Real Testnet Tx → Live Explorer | ✅ **Complete** |
+
+---
+
+## 💻 Quick Start & Local Setup
 
 ```bash
 # 1. Clone Repository
@@ -144,44 +160,18 @@ npm install
 # 3. Setup Testnet Accounts & Keys
 npx tsx scripts/setup-testnet.ts
 
-# 4. Build Workspace Packages
+# 4. Build Workspaces
 npm run build
 
-# 5. Launch Local Dev Playground
+# 5. Launch Local Dev Server
 npm run dev
 ```
 
 ---
 
-## 📦 NPM Package Publishing (For Maintainers)
-
-To publish `@rampkit/core` and `@rampkit/ui` to NPM:
-
-```bash
-# Ensure build is fresh
-npm run build
-
-# Publish public packages to NPM
-npm publish --workspaces --access public
-```
-
----
-
-## 🎯 Bounty Alignment
-
-This project addresses **3 out of 5** suggested deliverables for the Brazil Ramps bounty:
-
-| Bounty Example | Deliverable | Status |
-|---------------|-------------|--------|
-| **Multi-anchor router**: "one interface, multiple anchors, live quotes" | `@rampkit/core` — `RampRouter.getQuotes()` | ✅ **Complete** |
-| **Ramp UX kit**: "reusable, documented, importable, works in a second app" | `@rampkit/ui` — `<RampWidget />` & `<SavingsWidget />` | ✅ **Complete** |
-| **PIX ramp integration**: "BRL in and out via PIX into Etherfuse USDC/TESOURO" | Full flow: PIX → Etherfuse API → Real Testnet Tx → Live Explorer | ✅ **Complete** |
-
----
-
 ## 📚 Documentation Deep-Dive
 
-- 📖 [SDK Reference](docs/SDK_REFERENCE.md) — Full `@rampkit/core` API manual
+- 📖 [SDK Reference](docs/SDK_REFERENCE.md) — Full `rampkit-latam-core` API manual
 - 🎨 [UI Kit Guide](docs/UI_GUIDE.md) — Component props & theme customization
 - 💰 [Savings Flow](docs/SAVINGS_FLOW.md) — Deep-dive into PIX → USDC → TESOURO yield
 - 🛠️ [Getting Started](docs/README.md) — Detailed setup instructions

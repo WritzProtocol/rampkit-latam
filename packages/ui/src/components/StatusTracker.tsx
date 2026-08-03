@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import type { OrderStatus } from '@rampkit/core';
+import type { OrderStatus } from 'rampkit-latam-core';
 
 export interface StatusTrackerProps {
   /** Current order status */

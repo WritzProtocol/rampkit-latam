@@ -1,49 +1,59 @@
-# 🇧🇷 @kevinbrenes/rampkit-core
+# ⚡ rampkit-latam-core
 
-> Enterprise Multi-Anchor Router SDK for Stellar — Unified API routing for Etherfuse, Manteca, and Koywe fiat ramps in Latin America.
+> **Enterprise Multi-Anchor Router SDK for Stellar — Unified API routing for Etherfuse, Manteca, and Koywe fiat ramps in Latin America.**
 
-[![npm version](https://img.shields.io/npm/v/@kevinbrenes/rampkit-core.svg)](https://www.npmjs.com/package/@kevinbrenes/rampkit-core)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-## 📌 Overview
-
-`@kevinbrenes/rampkit-core` is a unified TypeScript SDK that abstracts the fragmented API specifications of Latin American Stellar Anchors (**Etherfuse**, **Manteca**, and **Koywe**) into a single, standardized Multi-Anchor Router engine.
-
-Instead of spending weeks writing custom integration logic for PIX (Brazil), SPEI (Mexico), Khipu (Chile), and ACH (USA), developers can initialize `RampRouter` and query quotes, execute orders, and stream live order statuses in minutes.
+[![npm version](https://img.shields.io/npm/v/rampkit-latam-core.svg?style=flat-square&color=4ade80)](https://www.npmjs.com/package/rampkit-latam-core)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![Stellar Network](https://img.shields.io/badge/Stellar-Testnet-purple.svg?style=flat-square)](https://stellar.org)
 
 ---
 
-## ✨ Features & Capabilities
+## 📌 Executive Summary
 
-- 🔀 **Multi-Anchor Smart Routing**: Queries live quotes from all available anchors in parallel and orders them by lowest fees or highest payout.
-- ⚡ **Etherfuse Live API Adapter**: Real-time integration with Etherfuse Sandbox (`/ramp/quote`, `/ramp/order`, `/ramp/orders`, `/ramp/bank-accounts`).
-- 🔄 **Stellar Horizon Transaction Hash Resolver**: Converts Base58 signature strings into 64-hex transaction hashes for seamless Stellar Expert tracking.
-- 🌐 **SEP-24 & SEP-6 Standardized Data Schemas**: Unified asset codes, payment rails, quotes, and status responses.
-- 🧪 **Hybrid Sandbox Mode**: Simulates fiat bank transfers while executing real blockchain operations on Stellar Testnet.
+`rampkit-latam-core` is an open-source, enterprise-grade TypeScript SDK built for developers integrating Latin American financial payment rails onto the Stellar network.
+
+Traditionally, supporting regional fiat payment methods—such as **PIX** (Brazil), **SPEI** (Mexico), **Khipu** (Chile), and **ACH** (USA)—requires reading disparate Anchor documentation (SEP-24 / SEP-6) and maintaining custom integration code for vendors like **Etherfuse**, **Manteca**, and **Koywe**.
+
+`rampkit-latam-core` abstracts this fragmentation into a single **Multi-Anchor Smart Router**, enabling developers to fetch optimal quotes in parallel, execute transactions, and monitor real-time order states with unified type definitions.
+
+---
+
+## ✨ Core Features
+
+- 🔀 **Multi-Anchor Smart Rate Routing**: Concurrently queries quotes from Etherfuse, Manteca, and Koywe, ordering results by lowest fee structure and best exchange rates.
+- ⚡ **Etherfuse Real API Integration**: Fully compliant adapter connected to the live Etherfuse Sandbox API (`POST /ramp/order`, `GET /ramp/orders`, `GET /ramp/bank-accounts`).
+- 🔄 **Stellar Horizon Transaction Hash Resolver**: Automatically resolves Base58 signature strings into 64-character hexadecimal hashes for direct [Stellar Expert Explorer](https://stellar.expert/explorer/testnet) lookup.
+- 🌐 **Standardized SEP Schemas**: Unified TypeScript interfaces across asset definitions, payment rails, quote payloads, and status responses.
+- 🧪 **Hybrid Sandbox Mode**: Simulates fiat bank transfers while executing real on-chain ledger operations on Stellar Testnet.
 
 ---
 
 ## 📦 Installation
 
+Install via `npm`, `yarn`, or `pnpm`:
+
 ```bash
-npm install @kevinbrenes/rampkit-core @stellar/stellar-sdk
+npm install rampkit-latam-core @stellar/stellar-sdk
 ```
 
-Or with Yarn / pnpm:
 ```bash
-pnpm add @kevinbrenes/rampkit-core @stellar/stellar-sdk
+yarn add rampkit-latam-core @stellar/stellar-sdk
+```
+
+```bash
+pnpm add rampkit-latam-core @stellar/stellar-sdk
 ```
 
 ---
 
-## 💡 Quick Start & Usage Examples
+## 💡 Developer Guide & Code Examples
 
-### 1. Initialize the Router Engine
+### 1. Initializing the Router Engine
 
 ```typescript
-import { RampRouter } from '@kevinbrenes/rampkit-core';
+import { RampRouter } from 'rampkit-latam-core';
 
-const router = new RampRouter({
+export const router = new RampRouter({
   network: 'testnet', // 'testnet' | 'mainnet'
   anchors: {
     etherfuse: {
@@ -64,10 +74,10 @@ const router = new RampRouter({
 
 ---
 
-### 2. Fetch Multi-Anchor Quotes in Parallel
+### 2. Querying Multi-Anchor Quotes in Parallel
 
 ```typescript
-// Query best rates across all LATAM anchors simultaneously
+// Fetch live quotes across all supported anchors simultaneously
 const quotes = await router.getQuotes({
   direction: 'on-ramp',
   sourceAsset: 'BRL',
@@ -76,13 +86,25 @@ const quotes = await router.getQuotes({
   country: 'BR',
 });
 
-console.log('Best Quote:', quotes[0]);
-// Output: { id: '...', anchorId: 'etherfuse', exchangeRate: 0.196, fee: 0.20, ... }
+// Returns an array sorted by best payout rate
+console.log('Top Recommended Quote:', quotes[0]);
+/*
+{
+  id: 'quote-ef-1234',
+  anchorId: 'etherfuse',
+  anchorName: 'Etherfuse',
+  exchangeRate: 0.1961,
+  fee: 0.20,
+  estimatedPayout: '19.61',
+  paymentRail: 'PIX',
+  settlementTime: '< 1 min'
+}
+*/
 ```
 
 ---
 
-### 3. Execute On-Ramp Order & Get Payment Details
+### 3. Executing an On-Ramp Order & Generating Payment QR
 
 ```typescript
 const order = await router.executeOrder({
@@ -92,25 +114,33 @@ const order = await router.executeOrder({
 });
 
 console.log('PIX Payment Instructions:', order.paymentInstructions);
-// Renders PIX QR Code payload & copyable Pix Key string
+/*
+{
+  qrCodeUrl: 'https://...',
+  pixKey: '00020126580014br.gov.bcb.pix...',
+  expiration: '2026-08-03T19:00:00Z'
+}
+*/
 ```
 
 ---
 
-### 4. Stream Live Order Status
+### 4. Polling Live Order Status & Horizon Resolution
 
 ```typescript
 const status = await router.getOrderStatus(order.id, 'etherfuse');
-console.log('Order Status:', status.status); // 'pending' | 'completed' | 'failed'
-console.log('Explorer URL:', status.explorerUrl);
+
+console.log('Status:', status.status); // 'completed' | 'pending' | 'failed'
+console.log('Stellar Explorer URL:', status.explorerUrl);
+// Returns: https://stellar.expert/explorer/testnet/tx/9d4aee900373f7f3108d72c7...
 ```
 
 ---
 
-## 📖 Supported Corridors
+## 📖 Regional Corridor Compatibility
 
-| Country | Fiat Currency | Payment Rail | Supported Anchors | Token Assets | Default Yield |
-|---------|---------------|--------------|-------------------|--------------|---------------|
+| Country | Currency | Payment Rail | Anchors Handled | Supported Tokens | Yield Capability |
+|---------|----------|--------------|-----------------|------------------|------------------|
 | 🇧🇷 **Brazil** | BRL | PIX | Etherfuse, Manteca | USDC, TESOURO | **13.25% APY** |
 | 🇲🇽 **Mexico** | MXN | SPEI | Etherfuse, Koywe | USDC, CETES | **10.50% APY** |
 | 🇨🇱 **Chile** | CLP | Khipu | Koywe | USDC | — |
@@ -118,11 +148,22 @@ console.log('Explorer URL:', status.explorerUrl);
 
 ---
 
-## 🔗 Related Packages
+## 🛠️ API Reference Summary
 
-- 🎨 [`@kevinbrenes/rampkit-ui`](https://www.npmjs.com/package/@kevinbrenes/rampkit-ui) — Drop-in React UI components (`<RampWidget />`, `<SavingsWidget />`).
-- 🌐 [Live Production Demo Playground](https://rampkit-latam.vercel.app)
-- 🐙 [GitHub Repository](https://github.com/diegoucampos-tech/rampkit-latam)
+| Method | Parameters | Return Type | Description |
+|--------|------------|-------------|-------------|
+| `getQuotes(params)` | `QuoteRequest` | `Promise<RampQuote[]>` | Fetches live quotes from all anchors in parallel |
+| `executeOrder(params)` | `OrderRequest` | `Promise<RampOrder>` | Submits order to selected anchor and returns payment info |
+| `getOrderStatus(id, anchor)` | `string, string` | `Promise<OrderStatusResponse>` | Checks current order state and resolves 64-hex transaction hash |
+| `getYieldBearingAssets()` | — | `Promise<AnchorAsset[]>` | Returns tokenized sovereign debt assets (TESOURO, CETES, USTRY) |
+
+---
+
+## 🔗 Live Resources & Ecosystem Links
+
+- 🎨 UI Kit: [`rampkit-latam-ui`](https://www.npmjs.com/package/rampkit-latam-ui)
+- 🌐 Live Production Demo: [https://rampkit-latam.vercel.app](https://rampkit-latam.vercel.app)
+- 🐙 Repository: [GitHub - diegoucampos-tech/rampkit-latam](https://github.com/diegoucampos-tech/rampkit-latam)
 
 ---
 

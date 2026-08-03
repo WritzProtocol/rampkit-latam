@@ -16,7 +16,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import type { RampRouter, AnchorAsset } from '@rampkit/core';
+import type { RampRouter, AnchorAsset } from 'rampkit-latam-core';
 
 export interface VaultState {
   principal: number;
@@ -151,7 +151,7 @@ export const SavingsWidget: React.FC<SavingsWidgetProps> = ({
     (async () => {
       try {
         const assets = await router.getYieldBearingAssets();
-        const tesouro = assets.find((a) => a.code === 'TESOURO');
+        const tesouro = assets.find((a: any) => a.code === 'TESOURO');
         if (tesouro) setTesouroAsset(tesouro);
       } catch {
         // Use defaults

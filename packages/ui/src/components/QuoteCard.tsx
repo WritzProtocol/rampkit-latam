@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import type { RampQuote } from '@rampkit/core';
+import type { RampQuote } from 'rampkit-latam-core';
 
 export interface QuoteCardProps {
   /** The quote to display */
