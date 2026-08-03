@@ -90,22 +90,22 @@ An on-chain Rust vault (`contracts/savings-vault`) that accepts deposits and aut
 
 ```mermaid
 graph TD
-    classDef sdk fill:#1a1a2e,stroke:#4ade80,stroke-width:2px,color:#fff
+    classDef sdk fill:#1a1a2e,stroke:#e94560,stroke-width:2px,color:#fff
     classDef anchor fill:#0f3460,stroke:#16213e,stroke-width:2px,color:#fff
-    classDef contract fill:#533483,stroke:#4ade80,stroke-width:2px,color:#fff
-    classDef ui fill:#4ade80,stroke:#1a1a2e,stroke-width:2px,color:#000
+    classDef contract fill:#533483,stroke:#e94560,stroke-width:2px,color:#fff
+    classDef ui fill:#e94560,stroke:#1a1a2e,stroke-width:2px,color:#fff
 
-    UI["@rampkit/ui<br>React UI Kit"]:::ui
+    UI["@rampkit/ui<br>React Components"]:::ui
     SDK["@rampkit/core<br>Multi-Anchor Router"]:::sdk
     
     subgraph Anchors
-        EF["Etherfuse<br>🇧🇷 PIX · TESOURO (13.25% APY)"]:::anchor
+        EF["Etherfuse<br>🇧🇷 PIX · TESOURO"]:::anchor
         MA["Manteca<br>🇧🇷 PIX · USDC"]:::anchor
         KO["Koywe<br>🇲🇽 SPEI · 🇨🇱 Khipu"]:::anchor
     end
 
-    SC["Savings Vault<br>🔒 Soroban Smart Contract"]:::contract
-    SN["Stellar Horizon & Testnet"]:::sdk
+    SC["Savings Vault<br>🔒 Auto-Savings"]:::contract
+    SN["Stellar Network"]:::sdk
 
     UI --> SDK
     SDK --> EF
