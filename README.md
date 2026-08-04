@@ -270,6 +270,21 @@ This project addresses **3 of the 5** suggested deliverables from the Brazil Ram
 
 ---
 
+## Where RampKit Fits in the Stellar Ecosystem
+
+LATAM ramps are a proven category on Stellar — several SCF-funded teams are already solving pieces of this problem:
+
+| Project | What they do | SCF funding |
+|---|---|---|
+| [TuCambio](https://github.com/tucambioapp) | Stellar-based on/off-ramp API for LATAM markets | $75,000 (round 37) |
+| [Abroad](https://github.com/abroad-finance/abroad) | Interoperability layer between Stellar wallets and QR fiat payments | $149,820 (rounds 32, 35) |
+| Conomy | LATAM payment gateway covering crypto on/off-ramps + local rails | $103,000 (round 41) |
+| DomiPago, Puenta | Single-corridor remittance apps (Dominican Republic diaspora, migrant transfers) | $110,000 / $171,294 |
+
+Each of them nails one piece — one corridor, one payment rail, or one interoperability layer. None ship all three layers RampKit does in a single open-source, `npm install`-able toolkit: **a router across multiple named anchors, a drop-in React UI kit, and an on-chain yield product.** A team building on any of the projects above still has to write the router, the UI, or the vault themselves. That gap — not "no one is building ramps on Stellar," but "no one has packaged the whole stack" — is what RampKit closes.
+
+---
+
 ## Links
 
 | Resource | Link |
