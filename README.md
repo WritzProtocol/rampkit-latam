@@ -128,10 +128,12 @@ A Soroban (Stellar smart contract) that turns the ramp into a savings product:
 
 1. User deposits BRL via PIX → receives USDC on Stellar
 2. USDC is deposited into the on-chain vault
-3. Vault accrues yield at 13.25% APY (matching [TESOURO](https://etherfuse.com/) — tokenized Brazilian government bonds)
+3. Vault accrues yield per second at a configurable APY (13.25%, matching [TESOURO](https://etherfuse.com/) — tokenized Brazilian government bonds)
 4. User withdraws yield or principal → converts back to BRL via PIX
 
 **The end-user experience:** "Deposit via PIX → earn 13% → withdraw via PIX." No wallets, no crypto jargon, no manual steps.
+
+> **How the yield is computed:** the contract runs real, on-chain, time-weighted accrual — `principal × elapsed_seconds × rate_bps ⁄ (10,000 × seconds_per_year)` — recalculated on every deposit, withdrawal, and state read, and withdrawable today on testnet. `rate_bps` is admin-configurable and currently set to mirror TESOURO's published APY. The production step still ahead: have the vault actually custody TESOURO and derive the rate from the token's NAV instead of an admin-set value.
 
 ---
 
@@ -173,12 +175,14 @@ sequenceDiagram
     rect rgb(10, 10, 50)
     Note over U, EF: OFF-RAMP: USDC → PIX
     U->>APP: "Sacar ganancias"
-    APP->>SC: withdraw_yield(owner)
+    APP->>SC: withdraw_yield(owner, amount)
     SC-->>APP: USDC transferred
     APP->>SDK: router.getQuotes({ USDC→BRL, off-ramp })
     EF->>U: PIX sent to bank account
     end
 ```
+
+Each adapter (Etherfuse, Manteca, Koywe) calls its anchor's real sandbox API first; if the sandbox is unreachable it falls back to a realistic simulated quote/order so the demo never breaks mid-flow. The Stellar leg is never faked either way — even the fallback path signs a fresh keypair, funds it via Friendbot, and submits a real payment operation to testnet through Horizon, so the Explorer link above always resolves to an actual transaction.
 
 ---
 
@@ -262,7 +266,7 @@ This project addresses **3 of the 5** suggested deliverables from the Brazil Ram
 |---|---|---|
 | **Multi-anchor router** — "one interface, multiple anchors, live quotes" | `rampkit-latam-core` — `RampRouter.getQuotes()` queries Etherfuse, Manteca, and Koywe in parallel | ✅ Complete |
 | **Ramp UX kit** — "reusable, documented, importable, works in a second app" | `rampkit-latam-ui` — published on npm, drop-in `<RampWidget />` and `<SavingsWidget />` | ✅ Complete |
-| **PIX ramp integration** — "BRL in and out via PIX into Etherfuse USDC/TESOURO" | Full flow: PIX → Etherfuse Sandbox API → real Stellar testnet transaction → Explorer link | ✅ Complete |
+| **PIX ramp integration** — "BRL in and out via PIX into Etherfuse USDC/TESOURO" | Full flow: PIX QR → Etherfuse Sandbox API (live call, simulated fallback for demo resilience) → real signed Stellar testnet transaction → Explorer link | ✅ Complete |
 
 ---
 
