@@ -6,15 +6,17 @@
   "workspaces": [
     "packages/core",
     "packages/ui",
+    "packages/x402",
     "demo"
   ],
   "scripts": {
     "build:core": "npm run build --workspace=packages/core",
     "build:ui": "npm run build --workspace=packages/ui",
-    "build": "npm run build:core && npm run build:ui",
+    "build": "npm run build:core && npm run build:ui && npm run build:x402",
     "dev": "npm run dev --workspace=demo",
     "test": "npm run test --workspace=packages/core",
-    "lint": "echo 'lint not configured yet'"
+    "lint": "echo 'lint not configured yet'",
+    "build:x402": "npm run build --workspace=packages/x402"
   },
   "keywords": [
     "stellar",

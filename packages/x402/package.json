@@ -1,0 +1,47 @@
+{
+  "name": "rampkit-latam-x402",
+  "version": "1.0.0",
+  "description": "LATAM stablecoin dev kit for x402 agentic payments on Stellar — price your API in BRL, MXN, or CLP and settle in stablecoin",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@x402/core": "^2.21.0",
+    "@x402/express": "^2.21.0",
+    "@x402/fetch": "^2.21.0",
+    "@x402/stellar": "^2.21.0",
+    "rampkit-latam-core": "^1.0.1"
+  },
+  "peerDependencies": {
+    "express": "^4.0.0 || ^5.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  },
+  "keywords": [
+    "stellar",
+    "x402",
+    "agentic-payments",
+    "stablecoin",
+    "latam",
+    "brl",
+    "mxn",
+    "usdc",
+    "sep-41"
+  ],
+  "author": "RampKit LATAM Team",
+  "license": "MIT"
+}

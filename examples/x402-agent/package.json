@@ -1,0 +1,19 @@
+{
+  "name": "rampkit-x402-agent-example",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Sample app: a LATAM FX API priced in BRL/MXN, sold to AI agents over x402",
+  "type": "module",
+  "scripts": {
+    "setup": "node setup.mjs",
+    "server": "node server.mjs",
+    "agent": "node agent.mjs"
+  },
+  "dependencies": {
+    "@stellar/stellar-sdk": "^13.1.0",
+    "dotenv": "^16.4.0",
+    "express": "^5.0.0",
+    "rampkit-latam-core": "^1.0.1",
+    "rampkit-latam-x402": "file:../../packages/x402"
+  }
+}
