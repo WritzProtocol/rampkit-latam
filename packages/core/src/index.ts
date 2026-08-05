@@ -59,6 +59,10 @@ export type {
   Corridor,
   AnchorAsset,
 
+  // Remittances
+  RemittanceRequest,
+  RemittanceQuote,
+
   // Configuration
   RampKitConfig,
   AnchorConfig,

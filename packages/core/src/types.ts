@@ -219,6 +219,52 @@ export interface ExecuteRampParams {
   fullName?: string;
 }
 
+// ─── Remittance Types ───────────────────────────────────────────
+
+/** Parameters for quoting a cross-border remittance */
+export interface RemittanceRequest {
+  /** Sender's country — determines the on-ramp corridor */
+  fromCountry: Country;
+  /** Sender's fiat currency */
+  fromCurrency: FiatCurrency;
+  /** Recipient's country — determines the off-ramp corridor */
+  toCountry: Country;
+  /** Recipient's fiat currency */
+  toCurrency: FiatCurrency;
+  /** Amount the sender pays, in `fromCurrency` */
+  amount: string;
+  /** Stablecoin used as the settlement bridge (default: USDC) */
+  bridgeAsset?: CryptoAsset;
+}
+
+/**
+ * A complete cross-border remittance route: sender's fiat is on-ramped to a
+ * stablecoin in one country, then off-ramped to the recipient's fiat in another.
+ * Each leg may be served by a different anchor — the router picks the best per leg.
+ */
+export interface RemittanceQuote {
+  /** On-ramp leg: sender's fiat → bridge asset */
+  sendLeg: RampQuote;
+  /** Off-ramp leg: bridge asset → recipient's fiat */
+  receiveLeg: RampQuote;
+  /** Stablecoin bridging the two legs */
+  bridgeAsset: CryptoAsset;
+  /** What the sender pays, in `fromCurrency` */
+  sendAmount: string;
+  /** What the recipient receives, in `toCurrency`, after all fees */
+  receiveAmount: string;
+  /** Effective end-to-end rate (1 unit of fromCurrency = X toCurrency) */
+  effectiveRate: string;
+  /** Combined fees from both legs, expressed in the sender's currency */
+  totalFees: string;
+  /** Combined fee percentage across both legs */
+  totalFeePercentage: number;
+  /** Estimated end-to-end settlement time in seconds */
+  estimatedSeconds: number;
+  /** Earliest expiry across both legs — the route is invalid after this */
+  expiresAt: Date;
+}
+
 // ─── Anchor Asset Info ──────────────────────────────────────────
 
 /**

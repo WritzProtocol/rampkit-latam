@@ -48,6 +48,8 @@ import {
   AnchorAsset,
   RampEvent,
   RampEventListener,
+  RemittanceRequest,
+  RemittanceQuote,
 } from './types';
 
 /**
@@ -199,6 +201,113 @@ export class RampRouter {
     if (!adapter) return false;
     const anchorOrderId = orderId.replace(/^(ef_|ma_|ko_)/, '');
     return adapter.cancelOrder(anchorOrderId);
+  }
+
+  // ─── Remittance API ────────────────────────────────────────
+
+  /**
+   * Quote a cross-border remittance as a single route.
+   *
+   * A remittance is two ramps chained through a stablecoin: the sender's fiat is
+   * on-ramped in their country, and the resulting stablecoin is off-ramped to the
+   * recipient's fiat in theirs. Each leg is quoted independently across all
+   * configured anchors, so the send and receive legs may resolve to different
+   * providers — whichever is best for that corridor.
+   *
+   * @returns The composed route, or null if either corridor has no available quote
+   */
+  async getRemittanceQuote(
+    params: RemittanceRequest,
+    strategy?: QuoteStrategy,
+  ): Promise<RemittanceQuote | null> {
+    const bridgeAsset = params.bridgeAsset || 'USDC';
+
+    const sendLeg = await this.getBestQuote(
+      {
+        direction: 'on-ramp',
+        sourceAsset: params.fromCurrency,
+        destAsset: bridgeAsset,
+        amount: params.amount,
+        country: params.fromCountry,
+      },
+      strategy,
+    );
+    if (!sendLeg) return null;
+
+    // The second leg converts exactly what the first leg produced, net of its fees.
+    const receiveLeg = await this.getBestQuote(
+      {
+        direction: 'off-ramp',
+        sourceAsset: bridgeAsset,
+        destAsset: params.toCurrency,
+        amount: sendLeg.destAmount,
+        country: params.toCountry,
+      },
+      strategy,
+    );
+    if (!receiveLeg) return null;
+
+    const sendAmount = parseFloat(sendLeg.sourceAmount);
+    const receiveAmount = parseFloat(receiveLeg.destAmount);
+
+    // Second-leg fees are denominated in the bridge asset; convert to the
+    // sender's currency via the first leg's rate so the total is one number.
+    const sendLegRate = parseFloat(sendLeg.exchangeRate) || 1;
+    const feesInSenderCurrency =
+      parseFloat(sendLeg.fees.total) + parseFloat(receiveLeg.fees.total) / sendLegRate;
+
+    return {
+      sendLeg,
+      receiveLeg,
+      bridgeAsset,
+      sendAmount: sendLeg.sourceAmount,
+      receiveAmount: receiveLeg.destAmount,
+      effectiveRate: (receiveAmount / sendAmount).toFixed(6),
+      totalFees: feesInSenderCurrency.toFixed(2),
+      totalFeePercentage: (feesInSenderCurrency / sendAmount) * 100,
+      estimatedSeconds: sendLeg.estimatedSeconds + receiveLeg.estimatedSeconds,
+      expiresAt: new Date(
+        Math.min(sendLeg.expiresAt.getTime(), receiveLeg.expiresAt.getTime()),
+      ),
+    };
+  }
+
+  /**
+   * Execute the send leg of a remittance.
+   *
+   * Only the first leg is executed here: it returns the payment instructions
+   * (PIX QR, SPEI CLABE, etc.) the sender must satisfy. Once that order settles,
+   * execute `quote.receiveLeg` via {@link executeRamp} to pay out the recipient.
+   *
+   * @param quote - The remittance route from {@link getRemittanceQuote}
+   * @param stellarAddress - Stellar address that custodies the bridge asset between legs
+   */
+  async executeRemittance(
+    quote: RemittanceQuote,
+    stellarAddress: string,
+    options?: Partial<Omit<ExecuteRampParams, 'quote' | 'stellarAddress'>>,
+  ): Promise<RampOrder> {
+    return this.executeRamp(quote.sendLeg, stellarAddress, options);
+  }
+
+  /**
+   * List every remittance corridor the configured anchors can serve end-to-end.
+   * A pair is viable when one anchor can on-ramp in the origin country and one
+   * can off-ramp in the destination country.
+   */
+  getRemittanceCorridors(): Array<{ from: Corridor; to: Corridor }> {
+    const corridors = this.getSupportedCorridors();
+    const pairs: Array<{ from: Corridor; to: Corridor }> = [];
+
+    for (const from of corridors) {
+      if (!from.directions.includes('on-ramp')) continue;
+      for (const to of corridors) {
+        if (to.country === from.country) continue;
+        if (!to.directions.includes('off-ramp')) continue;
+        pairs.push({ from, to });
+      }
+    }
+    return pairs;
   }
 
   // ─── Discovery API ─────────────────────────────────────────
