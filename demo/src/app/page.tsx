@@ -16,6 +16,7 @@ const CONTENT = {
     heroTitle: 'The unified payment infrastructure for Latin America.',
     heroSubtitle: 'RampKit is a Multi-Anchor Router SDK. We abstract the fragmented APIs of Etherfuse, Manteca, and Koywe into a single integration, so you can offer BRL, MXN, and CLP fiat ramps instantly.',
     tryDemo: 'Try the PIX Checkout Demo',
+    tryRemittance: 'Send a Remittance',
     github: 'View on GitHub',
     whyBuilt: 'Why we built RampKit',
     whyDesc: 'Integrating LATAM payment rails onto Stellar requires connecting to multiple anchors (SEP-24). Each anchor has different API endpoints, schemas, authentication methods, and KYC flows. This fragmentation costs developer weeks of integration time and results in poor price discovery for end users.',
@@ -58,6 +59,7 @@ const CONTENT = {
     heroTitle: 'La infraestructura de pagos unificada para Latinoamérica.',
     heroSubtitle: 'RampKit es un SDK enrutador multi-anchor. Abstraemos las APIs fragmentadas de Etherfuse, Manteca y Koywe en una sola integración para que ofrezcas rampas fiat BRL, MXN y CLP al instante.',
     tryDemo: 'Prueba la Demo PIX',
+    tryRemittance: 'Enviar una Remesa',
     github: 'Ver en GitHub',
     whyBuilt: 'Por qué construimos RampKit',
     whyDesc: 'Integrar los rieles de pago de LATAM en Stellar requiere conectarse a múltiples anchors (SEP-24). Cada uno tiene endpoints, esquemas y flujos KYC distintos. Esta fragmentación cuesta semanas de desarrollo y resulta en malos precios para los usuarios.',
@@ -100,6 +102,7 @@ const CONTENT = {
     heroTitle: 'A infraestrutura de pagamentos unificada da América Latina.',
     heroSubtitle: 'RampKit é um SDK roteador multi-anchor. Abstraímos as APIs fragmentadas da Etherfuse, Manteca e Koywe em uma única integração para você oferecer rampas BRL, MXN e CLP instantaneamente.',
     tryDemo: 'Testar Demo PIX',
+    tryRemittance: 'Enviar uma Remessa',
     github: 'Ver no GitHub',
     whyBuilt: 'Por que construímos o RampKit',
     whyDesc: 'Integrar trilhos de pagamento LATAM na Stellar exige conectar múltiplos anchors (SEP-24). Cada anchor tem endpoints e fluxos KYC diferentes. Essa fragmentação custa semanas de desenvolvimento e resulta em preços piores para os usuários.',
@@ -184,6 +187,9 @@ export default function LandingPage() {
           <Link href="/playground" className="px-6 py-3 bg-white text-black font-medium rounded text-center hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">
             {c.tryDemo}
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </Link>
+          <Link href="/remittance" className="px-6 py-3 border border-white/20 bg-transparent text-white font-medium rounded text-center hover:bg-white/5 transition-colors">
+            {c.tryRemittance}
           </Link>
           <a href="https://github.com/WritzProtocol/rampkit-latam" target="_blank" rel="noopener noreferrer" className="px-6 py-3 border border-white/10 bg-transparent text-white font-medium rounded text-center hover:bg-white/5 transition-colors">
             {c.github}
