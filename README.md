@@ -30,10 +30,14 @@ The result: most apps either support only one anchor (limiting coverage) or spen
 
 ## The Solution
 
-RampKit LATAM is an open-source developer toolkit that solves this in three layers:
+RampKit LATAM is an open-source developer toolkit that solves this in four layers:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
+│  Layer 4: rampkit-latam-x402 (Agentic Payments)         │
+│  Sell an API to AI agents priced in BRL/MXN/CLP —       │
+│  settles in stablecoin at the live corridor rate        │
+├─────────────────────────────────────────────────────────┤
 │  Layer 3: Soroban Smart Contract (savings-vault)        │
 │  On-chain yield vault — deposit USDC, earn 13.25% APY   │
 │  from tokenized Brazilian treasury bonds (TESOURO)      │
@@ -43,8 +47,8 @@ RampKit LATAM is an open-source developer toolkit that solves this in three laye
 │  <StatusTracker/>, <QuoteCard/> — ready to embed        │
 ├─────────────────────────────────────────────────────────┤
 │  Layer 1: rampkit-latam-core (TypeScript SDK)           │
-│  Unified router that queries Etherfuse, Manteca, and    │
-│  Koywe in parallel — one API for all of LATAM           │
+│  Unified router for Etherfuse, Manteca, and Koywe —     │
+│  parallel quotes plus cross-border remittance routing   │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -98,6 +102,7 @@ const quotes = await router.getQuotes({
 **Key capabilities:**
 - **Parallel quote comparison** — Fetch rates from all anchors at once, sorted by best payout.
 - **Unified order lifecycle** — `executeOrder()` and `getOrderStatus()` work the same regardless of which anchor is executing the trade.
+- **Cross-border remittance routing** — `getRemittanceQuote()` composes two ramp legs through a stablecoin bridge, quoting each leg independently so send and receive can route through different anchors. 26 corridors across the configured providers.
 - **Stellar transaction resolution** — Automatically converts Base58 signatures to hex hashes for [Stellar Expert](https://stellar.expert/explorer/testnet) lookup.
 
 ### Layer 2: `rampkit-latam-ui` — The React UI Kit
@@ -134,6 +139,26 @@ A Soroban (Stellar smart contract) that turns the ramp into a savings product:
 **The end-user experience:** "Deposit via PIX → earn 13% → withdraw via PIX." No wallets, no crypto jargon, no manual steps.
 
 > **How the yield is computed:** the contract runs real, on-chain, time-weighted accrual — `principal × elapsed_seconds × rate_bps ⁄ (10,000 × seconds_per_year)` — recalculated on every deposit, withdrawal, and state read, and withdrawable today on testnet. `rate_bps` is admin-configurable and currently set to mirror TESOURO's published APY. The production step still ahead: have the vault actually custody TESOURO and derive the rate from the token's NAV instead of an admin-set value.
+
+### Layer 4: `rampkit-latam-x402` — The Agentic Payments Kit
+
+x402 lets an AI agent pay for an HTTP resource: the server answers `402 Payment Required`, the agent pays on Stellar, the resource is returned. But x402 denominates prices in the settlement token, and a LATAM developer prices in reais and pesos — hardcoding the USDC equivalent means the price drifts as the corridor moves.
+
+This kit lets routes declare a price in local currency and resolves it to token base units **per request**, using the same router from Layer 1:
+
+```ts
+app.use(latamPaymentMiddleware({
+  router,
+  payTo: process.env.STELLAR_RECIPIENT!,
+  ozApiKey: process.env.OZ_API_KEY!,
+  routes: {
+    'GET /cotacao':     { price: { amount: '0.50', currency: 'BRL' } },
+    'GET /tipo-cambio': { price: { amount: '2.00', currency: 'MXN' } },
+  },
+}));
+```
+
+Resolution verified against live anchor quotes: **R$ 0,50 → 0.0875 USDC**, **$2.00 MXN → 0.1040 USDC**. Agents pay with the settlement token and no XLM — the facilitator sponsors network fees. Sample API and buyer agent in [examples/x402-agent](examples/x402-agent).
 
 ---
 
@@ -202,13 +227,17 @@ Each adapter (Etherfuse, Manteca, Koywe) calls its anchor's real sandbox API fir
 ```
 rampkit-latam/
 ├── packages/
-│   ├── core/          # rampkit-latam-core — TypeScript router SDK
-│   └── ui/            # rampkit-latam-ui — React component library
+│   ├── core/            # rampkit-latam-core — router SDK + remittance routing
+│   ├── ui/              # rampkit-latam-ui — React component library
+│   └── x402/            # rampkit-latam-x402 — agentic payments kit
 ├── contracts/
-│   └── savings-vault/ # Soroban smart contract — yield vault
-├── demo/              # Next.js demo application (deployed on Vercel)
-├── docs/              # SDK reference, UI guide, savings flow deep-dive
-└── scripts/           # Testnet setup & deployment utilities
+│   └── savings-vault/   # Soroban smart contract — yield vault
+├── demo/                # Next.js demo (Vercel) — ramp, savings, remittance
+├── examples/
+│   ├── vite-storefront/ # Second-app proof — installs both packages from npm
+│   └── x402-agent/      # Paid FX API + buyer agent
+├── docs/                # SDK reference, UI guide, savings flow deep-dive
+└── scripts/             # Testnet setup & deployment utilities
 ```
 
 ---
@@ -260,13 +289,17 @@ function App() {
 
 ## Bounty Alignment
 
-This project addresses **3 of the 5** suggested deliverables from the Brazil Ramps bounty:
+This project addresses **all 5** suggested deliverables from the Brazil Ramps bounty:
 
 | Bounty Deliverable | Our Implementation | Status |
 |---|---|---|
-| **Multi-anchor router** — "one interface, multiple anchors, live quotes" | `rampkit-latam-core` — `RampRouter.getQuotes()` queries Etherfuse, Manteca, and Koywe in parallel | ✅ Complete |
-| **Ramp UX kit** — "reusable, documented, importable, works in a second app" | `rampkit-latam-ui` — published on npm, drop-in `<RampWidget />` and `<SavingsWidget />` | ✅ Complete |
+| **Multi-anchor router** — "one API, multiple anchors, live quotes" | `rampkit-latam-core` — `RampRouter.getQuotes()` queries Etherfuse, Manteca, and Koywe in parallel and ranks by best payout | ✅ Complete |
+| **Ramp UX kit** — "documented, importable, works in a second app" | `rampkit-latam-ui` on npm. Proven in a second app: [examples/vite-storefront](examples/vite-storefront) sits outside the workspace on a different stack (Vite, not Next.js), installs both packages from the public registry, and returns live parallel quotes | ✅ Complete |
 | **PIX ramp integration** — "BRL in and out via PIX into Etherfuse USDC/TESOURO" | Full flow: PIX QR → Etherfuse Sandbox API (live call, simulated fallback for demo resilience) → real signed Stellar testnet transaction → Explorer link | ✅ Complete |
+| **Cross-border remittance demo** — "PT/ES-localized flow on a regional stablecoin" | [`/remittance`](demo/src/app/remittance/page.tsx) in PT/ES/EN across BR/MX/CL/US. Shows which anchor serves each leg, the stablecoin bridge amount, and the effective end-to-end rate — R$500 BR→MX settles at 1,632.52 MXN on 2.99% total fees | ✅ Complete |
+| **LATAM stablecoin dev kit** — "plug-and-play kit for a regional stablecoin that plugs into x402/MPP" | `rampkit-latam-x402` — price routes in BRL/MXN/CLP, settle in stablecoin at the live corridor rate, plus [a sample paid API and buyer agent](examples/x402-agent) | ⚠️ Kit complete, settlement unverified |
+
+> **On the last row:** the kit compiles, the middleware wires up, and local-currency pricing is verified against live anchor quotes. The end-to-end paid request has not been executed because it requires an OZ Channels facilitator key and faucet USDC — both Captcha-gated steps that cannot be provisioned programmatically. The [example README](examples/x402-agent/README.md) documents exactly what a reviewer needs to run it.
 
 ---
 
@@ -292,6 +325,9 @@ Each of them nails one piece — one corridor, one payment rail, or one interope
 | 🌐 Live Demo | [rampkit-latam.vercel.app](https://rampkit-latam.vercel.app) |
 | 📦 Core SDK (npm) | [`rampkit-latam-core`](https://www.npmjs.com/package/rampkit-latam-core) |
 | 📦 UI Kit (npm) | [`rampkit-latam-ui`](https://www.npmjs.com/package/rampkit-latam-ui) |
+| 🤖 x402 Kit | [packages/x402](packages/x402) — pending npm publish |
+| 🛒 Second-app proof | [examples/vite-storefront](examples/vite-storefront) |
+| 💸 Agent payments demo | [examples/x402-agent](examples/x402-agent) |
 | 📖 SDK Reference | [docs/SDK_REFERENCE.md](docs/SDK_REFERENCE.md) |
 | 🎨 UI Guide | [docs/UI_GUIDE.md](docs/UI_GUIDE.md) |
 | 💰 Savings Flow | [docs/SAVINGS_FLOW.md](docs/SAVINGS_FLOW.md) |
