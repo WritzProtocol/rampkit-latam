@@ -101,11 +101,11 @@ export function PaymentDashboard() {
 :root {
   --rk-bg-primary: #090a0f;
   --rk-bg-card: #12131c;
-  --rk-accent-color: #4ade80;
+  --rk-text-accent: #4ade80;
   --rk-text-primary: #ffffff;
   --rk-text-secondary: #94a3b8;
-  --rk-border-color: rgba(255, 255, 255, 0.08);
-  --rk-font-family: 'Inter', system-ui, sans-serif;
+  --rk-border: rgba(255, 255, 255, 0.08);
+  --rk-font: 'Inter', system-ui, sans-serif;
 }
 ```
 
@@ -125,7 +125,7 @@ Pass the `locale` prop to any component to update interface strings dynamically:
 
 - SDK Engine: [`rampkit-latam-core`](https://www.npmjs.com/package/rampkit-latam-core)
 - Live Production Demo: [https://rampkit-latam.vercel.app](https://rampkit-latam.vercel.app)
-- Repository: [GitHub - diegoucampos-tech/rampkit-latam](https://github.com/diegoucampos-tech/rampkit-latam)
+- Repository: [GitHub - WritzProtocol/rampkit-latam](https://github.com/WritzProtocol/rampkit-latam)
 
 ---
 

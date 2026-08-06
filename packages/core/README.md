@@ -54,7 +54,7 @@ pnpm add rampkit-latam-core @stellar/stellar-sdk
 import { RampRouter } from 'rampkit-latam-core';
 
 export const router = new RampRouter({
-  network: 'testnet', // 'testnet' | 'mainnet'
+  network: 'testnet', // 'testnet' | 'pubnet'
   anchors: {
     etherfuse: {
       apiKey: process.env.ETHERFUSE_API_KEY!,
@@ -94,14 +94,19 @@ console.log('Top Recommended Quote:', quotes[0]);
 
 ### 3. Executing an On-Ramp Order & Generating Payment QR
 
-```typescript
-const order = await router.executeOrder({
-  quoteId: quotes[0].id,
-  anchorId: quotes[0].anchorId,
-  publicKey: 'GBAEGEMNJHS5KP5CORUKHYITFI562KK3WP3CO7YRU7B3522MSC6UZ22P',
-});
+Pass the whole quote — the router reads `anchorId` from it to route the order to the
+correct anchor.
 
-console.log('PIX Payment Instructions:', order.paymentInstructions);
+```typescript
+const order = await router.executeRamp(
+  quotes[0],
+  'GBAEGEMNJHS5KP5CORUKHYITFI562KK3WP3CO7YRU7B3522MSC6UZ22P',
+  { email: 'user@example.com', taxId: '12345678909', fullName: 'Maria Silva' },
+);
+
+// Payment instructions live on the order's quote
+console.log('PIX copy-paste:', order.quote.paymentDetails?.pixCopyPaste);
+console.log('SPEI CLABE:', order.quote.paymentDetails?.speiClabe);
 ```
 
 ---
@@ -109,10 +114,36 @@ console.log('PIX Payment Instructions:', order.paymentInstructions);
 ### 4. Polling Live Order Status & Horizon Resolution
 
 ```typescript
-const status = await router.getOrderStatus(order.id, 'etherfuse');
+const status = await router.getStatus(order.orderId, order.anchorId);
 
-console.log('Status:', status.status); // 'completed' | 'pending' | 'failed'
-console.log('Stellar Explorer URL:', status.explorerUrl);
+console.log('Status:', status.status); // 'pending_payment' | 'processing' | 'completed' | ...
+console.log('Stellar TX:', status.stellarTxHash);
+console.log(`https://stellar.expert/explorer/testnet/tx/${status.stellarTxHash}`);
+```
+
+---
+
+### 5. Quoting a Cross-Border Remittance
+
+> Requires **1.1.0 or later**. This API is not present in the published `1.0.1`.
+
+Composes two ramp legs through a stablecoin bridge, quoting each leg independently so
+send and receive can route through different anchors.
+
+```typescript
+const remittance = await router.getRemittanceQuote({
+  fromCountry: 'BR', fromCurrency: 'BRL',
+  toCountry: 'MX',   toCurrency: 'MXN',
+  amount: '500',
+});
+
+console.log(`Recipient gets ${remittance?.receiveAmount} MXN`);
+console.log(`Send leg via ${remittance?.sendLeg.anchorId}`);
+console.log(`Receive leg via ${remittance?.receiveLeg.anchorId}`);
+console.log(`Total fees: ${remittance?.totalFeePercentage.toFixed(2)}%`);
+
+// Execute the send leg to get the sender's payment instructions
+const order = await router.executeRemittance(remittance!, 'G...');
 ```
 
 ---
@@ -132,10 +163,19 @@ console.log('Stellar Explorer URL:', status.explorerUrl);
 
 | Method | Parameters | Return Type | Description |
 |--------|------------|-------------|-------------|
-| `getQuotes(params)` | `QuoteRequest` | `Promise<RampQuote[]>` | Fetches live quotes from all anchors in parallel |
-| `executeOrder(params)` | `OrderRequest` | `Promise<RampOrder>` | Submits order to selected anchor and returns payment info |
-| `getOrderStatus(id, anchor)` | `string, string` | `Promise<OrderStatusResponse>` | Checks current order state and resolves 64-hex transaction hash |
-| `getYieldBearingAssets()` | — | `Promise<AnchorAsset[]>` | Returns tokenized sovereign debt assets (TESOURO, CETES, USTRY) |
+| `getQuotes(params, strategy?)` | `QuoteRequest`, `QuoteStrategy` | `Promise<RampQuote[]>` | Fetches live quotes from all anchors in parallel |
+| `getBestQuote(params, strategy?)` | `QuoteRequest`, `QuoteStrategy` | `Promise<RampQuote \| null>` | Top-ranked quote only |
+| `executeRamp(quote, address, opts?)` | `RampQuote`, `string` | `Promise<RampOrder>` | Submits the order to the quote's anchor and returns payment details |
+| `getStatus(orderId, anchorId)` | `string`, `AnchorId` | `Promise<RampOrder>` | Current order state, with the 64-hex transaction hash resolved |
+| `cancelOrder(orderId, anchorId)` | `string`, `AnchorId` | `Promise<boolean>` | Cancels an order where the anchor supports it |
+| `getRemittanceQuote(params, strategy?)` | `RemittanceRequest` | `Promise<RemittanceQuote \| null>` | Two-leg cross-border route through a stablecoin bridge |
+| `executeRemittance(quote, address, opts?)` | `RemittanceQuote`, `string` | `Promise<RampOrder>` | Executes the send leg of a remittance |
+| `getRemittanceCorridors()` | — | `Array<{ from, to }>` | Every viable origin/destination pair |
+| `getSupportedCorridors()` | — | `Corridor[]` | All corridors across configured anchors |
+| `getAssets()` | — | `Promise<AnchorAsset[]>` | Every tokenized asset the anchors expose |
+| `getYieldBearingAssets()` | — | `Promise<AnchorAsset[]>` | Tokenized sovereign debt only (TESOURO, CETES, USTRY) |
+| `getAvailableAnchors()` | — | `Promise<AnchorId[]>` | Health check across configured anchors |
+| `on(listener)` | `RampEventListener` | `() => void` | Subscribes to router events; returns an unsubscribe function |
 
 ---
 
@@ -143,7 +183,7 @@ console.log('Stellar Explorer URL:', status.explorerUrl);
 
 - UI Kit: [`rampkit-latam-ui`](https://www.npmjs.com/package/rampkit-latam-ui)
 - Live Production Demo: [https://rampkit-latam.vercel.app](https://rampkit-latam.vercel.app)
-- Repository: [GitHub - diegoucampos-tech/rampkit-latam](https://github.com/diegoucampos-tech/rampkit-latam)
+- Repository: [GitHub - WritzProtocol/rampkit-latam](https://github.com/WritzProtocol/rampkit-latam)
 
 ---
 

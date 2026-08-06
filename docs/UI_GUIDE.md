@@ -1,17 +1,17 @@
-# UI Kit Guide — `@rampkit/ui`
+# UI Kit Guide — `rampkit-latam-ui`
 
 ## Installation
 
 ```bash
-npm install @rampkit/ui @rampkit/core
+npm install rampkit-latam-ui rampkit-latam-core
 ```
 
 ## Quick Start
 
 ```tsx
-import { RampRouter } from '@rampkit/core';
-import { RampWidget } from '@rampkit/ui';
-import '@rampkit/ui/src/styles/rampkit.css';
+import { RampRouter } from 'rampkit-latam-core';
+import { RampWidget } from 'rampkit-latam-ui';
+import 'rampkit-latam-ui/src/styles/rampkit.css';
 
 const router = new RampRouter({
   network: 'testnet',
@@ -127,18 +127,18 @@ Order progress visualization.
 ### Importing the Theme
 
 ```tsx
-import '@rampkit/ui/src/styles/rampkit.css';
+import 'rampkit-latam-ui/src/styles/rampkit.css';
 ```
 
 ### Customizing Colors
 
-Override CSS custom properties:
+The default theme is a monochrome dark palette. Override any custom property to rebrand:
 
 ```css
 :root {
-  --rk-gradient-primary: linear-gradient(135deg, #00b4d8 0%, #023e8a 100%);
+  --rk-gradient-primary: #00b4d8;
   --rk-text-accent: #00b4d8;
-  --rk-bg-card: rgba(2, 62, 138, 0.7);
+  --rk-bg-card: #0b1a2b;
 }
 ```
 
@@ -146,13 +146,19 @@ Override CSS custom properties:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `--rk-bg-primary` | `#0a0b14` | Main background |
-| `--rk-bg-card` | `rgba(17, 18, 39, 0.7)` | Card background |
-| `--rk-gradient-primary` | Purple gradient | Primary accent |
-| `--rk-gradient-success` | Green gradient | Success states |
-| `--rk-text-primary` | `#f0f0f8` | Main text |
-| `--rk-text-accent` | `#667eea` | Accent text |
+| `--rk-bg-primary` | `#0A0A0A` | Main background |
+| `--rk-bg-card` | `#111111` | Card background |
+| `--rk-bg-secondary` | — | Secondary surface |
+| `--rk-border` | — | Default border color |
+| `--rk-gradient-primary` | `#ffffff` | Primary accent |
+| `--rk-gradient-success` | `#22c55e` | Success states |
+| `--rk-text-primary` | `#ffffff` | Main text |
+| `--rk-text-secondary` | — | Muted text |
+| `--rk-text-accent` | `#ffffff` | Accent text |
+| `--rk-font` | — | Base font stack |
 | `--rk-radius-lg` | `16px` | Card border radius |
+
+Despite the `--rk-gradient-*` names, these are flat colors in the current theme — the names are kept for backward compatibility. Run `grep -- '--rk-' node_modules/rampkit-latam-ui/src/styles/rampkit.css` for the full list.
 
 ---
 

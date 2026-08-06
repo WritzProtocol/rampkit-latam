@@ -11,7 +11,7 @@
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/KevinMB0220/rampkit-latam.git
+git clone https://github.com/WritzProtocol/rampkit-latam.git
 cd rampkit-latam
 npm install
 ```
@@ -66,6 +66,6 @@ npm run dev
 
 ## Project Documentation
 
-- **[SDK Reference](SDK_REFERENCE.md)** — Full API docs for `@rampkit/core`
-- **[UI Kit Guide](UI_GUIDE.md)** — How to use `@rampkit/ui` components
+- **[SDK Reference](SDK_REFERENCE.md)** — Full API docs for `rampkit-latam-core`
+- **[UI Kit Guide](UI_GUIDE.md)** — How to use `rampkit-latam-ui` components
 - **[Savings Flow](SAVINGS_FLOW.md)** — Technical deep-dive into the PIX→TESOURO yield loop

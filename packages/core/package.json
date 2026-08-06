@@ -1,6 +1,6 @@
 {
   "name": "rampkit-latam-core",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Enterprise Multi-Anchor Router SDK for Stellar — Unified API routing for Etherfuse, Manteca, and Koywe fiat ramps in LATAM",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -44,6 +44,6 @@
   "homepage": "https://rampkit-latam.vercel.app",
   "repository": {
     "type": "git",
-    "url": "https://github.com/diegoucampos-tech/rampkit-latam"
+    "url": "https://github.com/WritzProtocol/rampkit-latam"
   }
 }

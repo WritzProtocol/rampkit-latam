@@ -11,7 +11,7 @@ a Brazilian user deposits BRL via PIX, earns ~13% APY from TESOURO (tokenized Br
 sequenceDiagram
     participant U as 🧑 User (Brazil)
     participant APP as PoupaStellar App
-    participant SDK as @rampkit/core
+    participant SDK as rampkit-latam-core
     participant EF as Etherfuse API
     participant SN as Stellar Network
     participant SC as Soroban Vault
@@ -113,9 +113,11 @@ In production, the contract would:
 
 | Setting | Demo | Production |
 |---------|------|-----------|
-| `yield_rate_bps` | 500,000 (50,000% APY) | 1,325 (13.25% APY) |
-| Purpose | See fast yield in real-time | Match actual TESOURO rate |
-| Yield per hour (on $1000) | ~$5.70 | ~$0.0015 |
+| `yield_rate_bps` | 500,000 (5,000% APY) | 1,325 (13.25% APY) |
+| Purpose | See yield move in real time | Match actual TESOURO rate |
+| Yield per hour (on $1,000) | ~$5.71 | ~$0.0151 |
+
+`rate_bps` is an annual rate in basis points, so the annual multiplier is `rate_bps / 10,000` — 500,000 bps means 50× per year (5,000% APY), and 1,325 bps means 0.1325× (13.25% APY). `scripts/deploy-contract.sh` deploys with the demo rate so yield is visible within seconds; change `--yield_rate_bps` to `1325` for a realistic deployment.
 
 ## Regulatory Considerations
 

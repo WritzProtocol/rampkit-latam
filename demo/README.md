@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RampKit LATAM — Demo App
 
-## Getting Started
+The reference application for [RampKit LATAM](../README.md), deployed at
+**[rampkit-latam.vercel.app](https://rampkit-latam.vercel.app)**. Built with Next.js 16 (App
+Router) and consuming `rampkit-latam-core` and `rampkit-latam-ui` through the npm workspace.
 
-First, run the development server:
+## Running it
+
+From the repository root:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run build     # the demo imports the workspace packages' build output
+npm run dev       # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+No configuration is required. Anchor sandboxes reject the placeholder keys and the SDK falls
+back to simulated quotes, so every screen works on a clean clone. Supply real credentials in
+`.env` (`ETHERFUSE_API_KEY`, `MANTECA_API_KEY`, `KOYWE_API_KEY`) to hit the live sandboxes.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Routes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Route | What it shows |
+|---|---|
+| `/` | Landing page — problem, solution, and corridor coverage, in PT/ES/EN |
+| `/playground` | `<RampWidget />` and `<SavingsWidget />` side by side |
+| `/remittance` | Cross-border corridors with the full two-leg settlement breakdown |
 
-## Learn More
+## API routes
 
-To learn more about Next.js, take a look at the following resources:
+Server-side handlers keep anchor API keys off the client. All four share one `RampRouter`
+instance from [`src/app/api/router.ts`](src/app/api/router.ts).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Endpoint | Method | Purpose |
+|---|---|---|
+| `/api/quotes` | POST | Parallel quotes across configured anchors |
+| `/api/ramp` | POST / GET | Execute an order; poll its status |
+| `/api/assets` | GET | Tokenized assets exposed by the anchors |
+| `/api/remittance` | POST / GET | Quote and execute a two-leg remittance; list corridors |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Localization
 
-## Deploy on Vercel
+Language is held in [`LanguageContext`](src/context/LanguageContext.tsx) and persisted to
+`localStorage`. Because the provider defers render until it has read that value, pages are
+client-rendered — view source will show an empty shell, which is expected rather than a bug.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Portuguese uses `pt-BR` number formatting throughout, so amounts render as `1.632,52`.

@@ -49,7 +49,7 @@ fn setup_vault() -> (
     let tesouro_address = tesouro_contract.address();
 
     // Deploy the savings vault with 13.25% APY (1325 bps)
-    // For demo, use 500_000 bps (50,000% APY) to see fast yield
+    // For demo, use 500_000 bps (5,000% APY) to see fast yield
     let vault_id = env.register(
         SavingsVault,
         (
@@ -108,7 +108,7 @@ fn test_yield_accrual() {
     advance_time(&_env, 3600);
 
     let state = client.get_state();
-    // With 500,000 bps (50,000% APY):
+    // With 500,000 bps (5,000% APY):
     // yield = 10_000_000_000 × 3600 × 500_000 / (10_000 × 31_536_000)
     // yield ≈ 57,077,625 (≈ 5.7 USDC per hour at demo rate)
     assert!(state.accrued_yield > 0);

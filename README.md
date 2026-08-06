@@ -100,7 +100,7 @@ const quotes = await router.getQuotes({
 
 - **Parallel quote comparison** — every configured anchor is queried at once and ranked by best payout. A slow or failing anchor is dropped from the comparison rather than blocking it.
 - **Unified order lifecycle** — `executeRamp()` and `getStatus()` behave identically no matter which anchor is executing the trade.
-- **Cross-border remittance routing** — `getRemittanceQuote()` composes two ramp legs through a stablecoin bridge and quotes each leg independently, so a transfer can on-ramp through one anchor and off-ramp through another. **26 corridors** across the configured providers.
+- **Cross-border remittance routing** — `getRemittanceQuote()` composes two ramp legs through a stablecoin bridge and quotes each leg independently, so a transfer can on-ramp through one anchor and off-ramp through another. **26 corridors** with all three anchors configured. *(Requires core ≥ 1.1.0 — build from source; the published 1.0.1 predates this API.)*
 - **Stellar transaction resolution** — anchors return transaction identifiers in inconsistent formats; the SDK resolves them to the 64-character hex hash that [Stellar Expert](https://stellar.expert/explorer/testnet) expects, so explorer links always work.
 
 ### Layer 2: `rampkit-latam-ui` — The React UI Kit
@@ -219,7 +219,7 @@ sequenceDiagram
 | 🇨🇱 Chile | CLP | Khipu | Koywe | USDC | — |
 | 🇺🇸 USA | USD | ACH / Wire | Etherfuse | USDC, USTRY | 4.80% APY |
 
-Any origin country can pay out to any other, which is what produces the 26 remittance corridors.
+Any origin country can pay out to any other, which is what produces the 26 remittance corridors — that figure assumes all three anchors are configured, and drops as you configure fewer.
 
 ---
 

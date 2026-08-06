@@ -1,4 +1,4 @@
-# SDK Reference — `@rampkit/core`
+# SDK Reference — `rampkit-latam-core`
 
 ## RampRouter
 
@@ -94,6 +94,65 @@ Check order status. Works across any anchor.
 
 ```typescript
 const status = await router.getStatus('ef_abc123', 'etherfuse');
+```
+
+---
+
+#### `getRemittanceQuote(params, strategy?)`
+
+> **Requires `rampkit-latam-core` ≥ 1.1.0.** The remittance API is not in the currently
+> published `1.0.1` — calling it against that version throws
+> `router.getRemittanceQuote is not a function`. Build from source until 1.1.0 is published.
+
+Quote a cross-border transfer as a single route. Composes an on-ramp in the sender's country
+with an off-ramp in the recipient's, bridged by a stablecoin. Each leg is quoted independently
+across all configured anchors, so send and receive may resolve to different providers.
+
+```typescript
+const route = await router.getRemittanceQuote({
+  fromCountry: 'BR', fromCurrency: 'BRL',
+  toCountry: 'MX',   toCurrency: 'MXN',
+  amount: '500',
+  // bridgeAsset: 'USDC'  // optional, defaults to USDC
+});
+```
+
+**Returns:** `Promise<RemittanceQuote | null>` — `null` when either corridor has no available quote.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `sendLeg` | `RampQuote` | On-ramp leg: sender's fiat → bridge asset |
+| `receiveLeg` | `RampQuote` | Off-ramp leg: bridge asset → recipient's fiat |
+| `bridgeAsset` | `CryptoAsset` | Stablecoin bridging the legs |
+| `sendAmount` | `string` | What the sender pays |
+| `receiveAmount` | `string` | What the recipient receives, after all fees |
+| `effectiveRate` | `string` | End-to-end rate (1 source unit = X dest units) |
+| `totalFees` | `string` | Both legs' fees, expressed in the sender's currency |
+| `totalFeePercentage` | `number` | Combined fee percentage |
+| `estimatedSeconds` | `number` | End-to-end settlement estimate |
+| `expiresAt` | `Date` | Earliest expiry across both legs |
+
+---
+
+#### `executeRemittance(quote, stellarAddress, options?)`
+
+Executes the **send leg only**, returning the payment instructions the sender must satisfy.
+Once that order settles, execute `quote.receiveLeg` via `executeRamp()` to pay out the recipient.
+
+```typescript
+const order = await router.executeRemittance(route, 'GABCD...1234');
+console.log(order.quote.paymentDetails?.pixCopyPaste);
+```
+
+---
+
+#### `getRemittanceCorridors()`
+
+Every origin/destination pair the configured anchors can serve end-to-end.
+
+```typescript
+const pairs = router.getRemittanceCorridors();
+// [{ from: Corridor, to: Corridor }, ...]  — 26 pairs with all three anchors configured
 ```
 
 ---
@@ -204,7 +263,7 @@ Or: `'failed'` | `'expired'` | `'refunded'`
 For advanced use, you can use individual adapters directly:
 
 ```typescript
-import { EtherfuseAdapter } from '@rampkit/core';
+import { EtherfuseAdapter } from 'rampkit-latam-core';
 
 const etherfuse = new EtherfuseAdapter({
   apiKey: 'your-key',
