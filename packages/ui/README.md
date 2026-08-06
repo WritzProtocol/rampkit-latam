@@ -51,7 +51,7 @@ pnpm add rampkit-latam-ui rampkit-latam-core
 import React from 'react';
 import { RampRouter } from 'rampkit-latam-core';
 import { RampWidget, SavingsWidget } from 'rampkit-latam-ui';
-import 'rampkit-latam-ui/dist/styles/rampkit.css';
+import 'rampkit-latam-ui/src/styles/rampkit.css';
 
 // 1. Initialize core router engine
 const router = new RampRouter({
@@ -95,7 +95,7 @@ export function PaymentDashboard() {
 
 ```css
 /* Import default theme */
-@import 'rampkit-latam-ui/dist/styles/rampkit.css';
+@import 'rampkit-latam-ui/src/styles/rampkit.css';
 
 /* Override theme variables for custom branding */
 :root {
